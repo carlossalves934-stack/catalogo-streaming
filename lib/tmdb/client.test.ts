@@ -132,4 +132,27 @@ describe('tmdbFetch', () => {
       /TMDB_ACCESS_TOKEN/,
     )
   })
+
+  it('nao vaza o token no erro lancado apos falha', async () => {
+    server.use(
+      http.get('https://api.themoviedb.org/3/teste', () => {
+        return new HttpResponse(null, { status: 404 })
+      }),
+    )
+
+    let erroCapturado: unknown
+    try {
+      await tmdbFetch('/teste', { revalidate: 60, retryBaseMs: 0 })
+    } catch (erro) {
+      erroCapturado = erro
+    }
+
+    expect(erroCapturado).toBeInstanceOf(TmdbError)
+    const erro = erroCapturado as TmdbError
+    const serializado = JSON.stringify({ message: erro.message, status: erro.status, stack: erro.stack })
+
+    expect(serializado).not.toContain('token-de-teste')
+    expect(serializado.toLowerCase()).not.toContain('authorization')
+    expect(serializado.toLowerCase()).not.toContain('bearer')
+  })
 })
