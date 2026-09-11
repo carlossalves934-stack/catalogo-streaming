@@ -90,8 +90,10 @@ describe('searchMovies', () => {
 describe('getSimilarMovies', () => {
   it('consulta o discover com o genero recebido, exclui o proprio filme e limita a 12', async () => {
     let url = ''
-    // 13 resultados, incluindo o proprio filme (id 550), para verificar exclusao e limite de 12.
-    const resultados = Array.from({ length: 13 }, (_, i) => ({
+    // 14 resultados, incluindo o proprio filme (id 550): apos excluir o proprio
+    // filme sobram 13, um a mais que o limite — so assim o slice(0, 12) e testado
+    // de verdade (com 13 resultados, o filtro sozinho ja daria 12).
+    const resultados = Array.from({ length: 14 }, (_, i) => ({
       id: i === 0 ? 550 : i + 1,
       title: `Filme ${i}`,
       vote_average: 7,
