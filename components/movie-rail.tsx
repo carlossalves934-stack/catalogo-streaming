@@ -7,9 +7,11 @@ type Props = {
   movies: Movie[]
   /** Destino do "ver mais". Omitir esconde o link. */
   href?: string
+  /** Ruling T13-a: repassado a cada MovieCard para o link do filme carregar o filtro de serviços. */
+  servicos?: string
 }
 
-export function MovieRail({ title, movies, href }: Props) {
+export function MovieRail({ title, movies, href, servicos }: Props) {
   // Um trilho vazio é ruído: não anuncia nada útil e ocupa espaço.
   if (movies.length === 0) return null
 
@@ -37,7 +39,7 @@ export function MovieRail({ title, movies, href }: Props) {
       >
         {movies.map((filme) => (
           <li key={filme.id} className="snap-start">
-            <MovieCard movie={filme} />
+            <MovieCard movie={filme} servicos={servicos} />
           </li>
         ))}
       </ul>

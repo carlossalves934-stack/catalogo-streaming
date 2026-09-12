@@ -87,7 +87,7 @@ export default async function ExplorarPage({ searchParams }: Props) {
             {resultado.totalResults.toLocaleString('pt-BR')} filmes encontrados
           </p>
 
-          <MovieGrid movies={resultado.items} />
+          <MovieGrid movies={resultado.items} servicos={params.servicos} />
 
           {/* Links reais em vez de scroll infinito: alcançáveis por
               teclado, funcionam com o botão voltar e não prendem o rodapé

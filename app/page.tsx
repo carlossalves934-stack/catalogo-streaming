@@ -14,9 +14,11 @@ type Props = {
 async function Trilho({
   definicao,
   providerIds,
+  servicos,
 }: {
   definicao: RailDefinition
   providerIds: number[]
+  servicos: string
 }) {
   // A busca ao TMDB fica isolada do JSX: o lint (react-hooks/error-boundaries)
   // não permite construir JSX dentro do try, já que React não renderiza a
@@ -42,7 +44,9 @@ async function Trilho({
     )
   }
 
-  return <MovieRail title={definicao.title} movies={pagina.items} href={definicao.href} />
+  return (
+    <MovieRail title={definicao.title} movies={pagina.items} href={definicao.href} servicos={servicos} />
+  )
 }
 
 export default async function HomePage({ searchParams }: Props) {
@@ -67,7 +71,7 @@ export default async function HomePage({ searchParams }: Props) {
 
       {definicoes.map((definicao) => (
         <Suspense key={definicao.id} fallback={<MovieRailSkeleton />}>
-          <Trilho definicao={definicao} providerIds={providerIds} />
+          <Trilho definicao={definicao} providerIds={providerIds} servicos={servicos} />
         </Suspense>
       ))}
     </div>

@@ -5,14 +5,16 @@ type Props = {
   movies: Movie[]
   /** Mapa de disponibilidade por id, usado apenas pela Busca. */
   availability?: Record<number, WatchOptions>
+  /** Ruling T13-a: repassado a cada MovieCard para o link do filme carregar o filtro de serviços. */
+  servicos?: string
 }
 
-export function MovieGrid({ movies, availability }: Props) {
+export function MovieGrid({ movies, availability, servicos }: Props) {
   return (
     <ul className="grid grid-cols-2 justify-items-center gap-6 px-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {movies.map((filme) => (
         <li key={filme.id}>
-          <MovieCard movie={filme} availability={availability?.[filme.id]} />
+          <MovieCard movie={filme} availability={availability?.[filme.id]} servicos={servicos} />
         </li>
       ))}
     </ul>

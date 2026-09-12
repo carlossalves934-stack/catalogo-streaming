@@ -11,11 +11,23 @@ type Props = {
    * e custariam uma requisição por filme.
    */
   availability?: WatchOptions
+  /**
+   * Ruling T13-a: valor bruto do parâmetro de URL `servicos`, repassado ao
+   * link do filme para que a página de detalhe filtre os "similares" pelo
+   * mesmo catálogo — sem isso, a origem do clique (Home/Explorar já
+   * filtradas) se perderia ao navegar. Onde não há esse contexto (Busca,
+   * Watchlist), os similares voltam sem filtro de serviço.
+   */
+  servicos?: string
 }
 
 // Componente de servidor: renderiza no servidor e não precisa de estado do
 // cliente. Só o botão de watchlist (interativo) hidrata separadamente.
-export function MovieCard({ movie, availability }: Props) {
+export function MovieCard({ movie, availability, servicos }: Props) {
+  const hrefFilme = servicos
+    ? `/filme/${movie.id}?servicos=${encodeURIComponent(servicos)}`
+    : `/filme/${movie.id}`
+
   return (
     <article className="group relative w-40 shrink-0 sm:w-44">
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-neutral-800">
@@ -42,7 +54,7 @@ export function MovieCard({ movie, availability }: Props) {
       </div>
 
       <Link
-        href={`/filme/${movie.id}`}
+        href={hrefFilme}
         className="mt-2 block rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
       >
         <h3 className="line-clamp-2 text-sm font-medium text-neutral-100">{movie.title}</h3>
