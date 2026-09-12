@@ -27,6 +27,10 @@ export function WatchlistView() {
   // sem reexibir o esqueleto, o que é aceitável: essa tela não promete
   // recarregar visivelmente a cada mudança, só carregar corretamente uma vez.
   useEffect(() => {
+    // ids === '' não precisa de fetch — não há nada para buscar. O estado
+    // "lista vazia" para esse caso é decidido direto no render abaixo a
+    // partir de `ids` (não de `filmes`), então não é preciso zerar `filmes`
+    // aqui: ver o comentário junto do `if (ids === '')` mais abaixo.
     if (!hydrated || ids === '') return
 
     let ativo = true
@@ -62,24 +66,34 @@ export function WatchlistView() {
     )
   }
 
-  if (filmes.length === 0) {
-    // `ids !== ''` distingue "nunca salvou nada" de "salvou, mas nenhum id
-    // resolveu no TMDB" (cada filme 404 upstream) — sem essa distinção, a
-    // segunda situação mostraria a mesma mensagem da primeira e diria à
-    // pessoa que ela nunca guardou nada, quando na verdade guardou.
-    if (ids !== '') {
-      return (
-        <EmptyState
-          title="Não foi possível carregar sua lista"
-          hint="Os filmes salvos não puderam ser encontrados agora. Tente novamente mais tarde."
-        />
-      )
-    }
-
+  if (ids === '') {
+    // Autoritativo por `ids`, não por `filmes`: `ids` vem de
+    // preferences.watchlist, que agora se propaga em tempo real entre
+    // instâncias de usePreferences() (ver lib/storage.ts). `filmes`, por
+    // outro lado, só é atualizado quando um fetch resolve — e não existe
+    // fetch para disparar quando a lista fica vazia (o efeito acima nem
+    // tenta buscar nesse caso). Se este branch dependesse de
+    // `filmes.length === 0`, o último filme removido ficaria preso na
+    // tela: era exatamente esse o defeito ainda aberto após a correção
+    // anterior desta revisão. Decidir por `ids` corrige isso na mesma
+    // renderização do clique, sem esperar (e sem precisar) nenhum fetch.
     return (
       <EmptyState
         title="Sua lista está vazia"
         hint="Toque na estrela de qualquer filme para guardá-lo aqui e assistir depois."
+      />
+    )
+  }
+
+  if (filmes.length === 0) {
+    // Chegou aqui com `ids` preenchido: a pessoa salvou algo, só que nenhum
+    // id resolveu no TMDB agora (ex.: 404 upstream). Mensagem distinta da
+    // acima — "nunca salvou nada" e "salvou, mas não carregou" não podem
+    // compartilhar o mesmo texto.
+    return (
+      <EmptyState
+        title="Não foi possível carregar sua lista"
+        hint="Os filmes salvos não puderam ser encontrados agora. Tente novamente mais tarde."
       />
     )
   }
