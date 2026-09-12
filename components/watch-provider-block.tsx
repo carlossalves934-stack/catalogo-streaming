@@ -37,10 +37,7 @@ function Secao({
               )}
               <span className="text-sm text-neutral-100">{provedor.name}</span>
               {assinado && (
-                // Sem acento de propósito: o teste da Tarefa 13 casa este
-                // texto com /voce assina/i, que não reconhece "ê". Manter
-                // sem acento evita um falso vermelho por causa só do texto.
-                <span className="text-xs font-medium text-sky-400">Voce assina</span>
+                <span className="text-xs font-medium text-sky-400">Você assina</span>
               )}
             </li>
           )

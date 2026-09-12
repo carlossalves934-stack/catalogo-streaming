@@ -26,13 +26,15 @@ describe('WatchProviderBlock', () => {
   it('destaca os servicos que o usuario ja assina', () => {
     render(<WatchProviderBlock options={completo} subscribedIds={[8]} />)
 
-    expect(screen.getByText(/voce assina/i)).toBeInTheDocument()
+    // String exata (com acento) em vez de regex solto: evita que a cópia
+    // desacentue de novo silenciosamente sem quebrar o teste.
+    expect(screen.getByText('Você assina')).toBeInTheDocument()
   })
 
   it('nao destaca nada quando o usuario nao assina o servico', () => {
     render(<WatchProviderBlock options={completo} subscribedIds={[119]} />)
 
-    expect(screen.queryByText(/voce assina/i)).not.toBeInTheDocument()
+    expect(screen.queryByText('Você assina')).not.toBeInTheDocument()
   })
 
   it('omite secoes vazias', () => {
