@@ -27,7 +27,10 @@ export function SearchForm() {
           value={termo}
           onChange={(evento) => setTermo(evento.target.value)}
           placeholder="Digite o nome de um filme"
-          className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2.5 text-neutral-100 placeholder:text-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          // Ruling T15-b: placeholder:text-neutral-500 sobre bg-neutral-900
+          // media 3.79:1, abaixo do mínimo de 4.5:1 — trocado por neutral-400
+          // (6.91:1) na auditoria da Task 15.
+          className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-2.5 text-neutral-100 placeholder:text-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
         />
       </div>
       <button

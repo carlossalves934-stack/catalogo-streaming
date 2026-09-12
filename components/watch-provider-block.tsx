@@ -81,7 +81,10 @@ export function WatchProviderBlock({ options, subscribedIds }: Props) {
           <Secao titulo="Comprar" provedores={options.buy} subscribedIds={[]} />
 
           {options.tmdbLink && (
-            <p className="mt-4 text-xs text-neutral-500">
+            // Ruling T15-b: text-neutral-500 sobre bg-neutral-950 mede 4.18:1,
+            // abaixo do mínimo de 4.5:1 para texto pequeno — trocado por
+            // neutral-400 (7.63:1) na auditoria da Task 15.
+            <p className="mt-4 text-xs text-neutral-400">
               <a
                 href={options.tmdbLink}
                 target="_blank"

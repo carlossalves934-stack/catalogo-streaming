@@ -20,11 +20,22 @@ type Props = {
    * Watchlist), os similares voltam sem filtro de serviço.
    */
   servicos?: string
+  /**
+   * Nível do heading do título do card, para a ordem de headings da página
+   * nunca pular um nível (regra `heading-order` do axe). Um MovieCard
+   * dentro de um MovieRail já tem um <h2> logo acima (o título do trilho),
+   * então o card usa <h3> (o padrão). Já em MovieGrid não há heading
+   * nenhum entre o <h1> da página e os cards — Explorar, Busca e Minha
+   * lista renderizam a grade direto sob o <h1> —, então MovieGrid pede
+   * <h2> aqui para não pular do 1 pro 3.
+   */
+  headingLevel?: 2 | 3
 }
 
 // Componente de servidor: renderiza no servidor e não precisa de estado do
 // cliente. Só o botão de watchlist (interativo) hidrata separadamente.
-export function MovieCard({ movie, availability, servicos }: Props) {
+export function MovieCard({ movie, availability, servicos, headingLevel = 3 }: Props) {
+  const Titulo = headingLevel === 2 ? 'h2' : 'h3'
   const hrefFilme = servicos
     ? `/filme/${movie.id}?servicos=${encodeURIComponent(servicos)}`
     : `/filme/${movie.id}`
@@ -58,7 +69,7 @@ export function MovieCard({ movie, availability, servicos }: Props) {
         href={hrefFilme}
         className="mt-2 block rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
       >
-        <h3 className="line-clamp-2 text-sm font-medium text-neutral-100">{movie.title}</h3>
+        <Titulo className="line-clamp-2 text-sm font-medium text-neutral-100">{movie.title}</Titulo>
       </Link>
 
       <p className="mt-1 flex items-center gap-2 text-xs text-neutral-400">

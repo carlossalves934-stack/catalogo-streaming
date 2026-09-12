@@ -4,7 +4,7 @@ Um app de descoberta de filmes que responde a uma pergunta: **o que eu assisto h
 
 Você informa quais streamings assina e o app passa a mostrar apenas filmes que você pode ver agora, sem custo adicional. Nada de recomendar um título e você descobrir na página do filme que ele não está incluído no seu plano.
 
-> **Status:** em desenvolvimento. O design está fechado; a implementação está começando.
+> **Status:** v1 completa. Descoberta, exploração, detalhe, busca e watchlist funcionando.
 
 ## O que ele faz
 
