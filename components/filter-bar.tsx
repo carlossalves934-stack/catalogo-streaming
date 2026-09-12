@@ -4,7 +4,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { Genre } from '@/lib/tmdb/types'
 
 const DECADAS = [2020, 2010, 2000, 1990, 1980, 1970]
-const NOTAS = [6, 7, 8]
+// 7.5 precisa estar na lista: é o valor que o trilho "Muito bem avaliados"
+// usa (vote_average.gte=7.5), e um <select> controlado cujo valor não bate
+// com nenhuma opção some sem aviso, escondendo o filtro que o usuário
+// precisaria limpar.
+const NOTAS = [6, 7, 7.5, 8]
 const ORDENACOES = [
   { valor: 'popularity', rotulo: 'Mais populares' },
   { valor: 'rating', rotulo: 'Melhores notas' },
@@ -94,7 +98,7 @@ export function FilterBar({ genres }: Props) {
           <option value="">Qualquer</option>
           {NOTAS.map((nota) => (
             <option key={nota} value={nota}>
-              {nota} ou mais
+              {nota.toLocaleString('pt-BR')} ou mais
             </option>
           ))}
         </select>

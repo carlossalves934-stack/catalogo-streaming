@@ -40,4 +40,16 @@ describe('railDefinitions', () => {
   it('ordena o trilho de bem avaliados por nota', () => {
     expect(railDefinitions(new Date('2026-03-15'))[1].filters.sortBy).toBe('rating')
   })
+
+  it('propaga minRating para o parametro nota do href, em todo trilho que o define', () => {
+    // A prévia do trilho e o "Ver mais" precisam mostrar o mesmo conjunto:
+    // se o filtro de nota da prévia não aparecer no href, o clique leva a
+    // um resultado mais amplo do que o usuário viu na home.
+    for (const trilho of railDefinitions(new Date('2026-03-15'))) {
+      if (trilho.filters.minRating === undefined) continue
+
+      const url = new URL(trilho.href, 'http://x')
+      expect(url.searchParams.get('nota')).toBe(String(trilho.filters.minRating))
+    }
+  })
 })

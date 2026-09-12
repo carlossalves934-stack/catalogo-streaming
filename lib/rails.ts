@@ -60,7 +60,9 @@ export function railDefinitions(hoje: Date): RailDefinition[] {
       id: 'redescobrir',
       title: 'Vale redescobrir',
       filters: { sortBy: 'rating', minRating: 7.5, decade: decadaRedescobrir },
-      href: `/explorar?ordenar=rating&decada=${decadaRedescobrir}`,
+      // nota=7.5 precisa acompanhar o href: sem ela, "Ver mais" leva a um
+      // resultado mais amplo do que a prévia que o usuário acabou de ver.
+      href: `/explorar?ordenar=rating&decada=${decadaRedescobrir}&nota=7.5`,
     },
   ]
 }

@@ -7,10 +7,14 @@ import { FilterBar } from './filter-bar'
 
 const push = vi.fn()
 
+// Mutável para permitir que testes individuais simulem outra query string
+// (ex.: nota=7.5 vinda da URL) sem recriar o mock inteiro.
+let searchParamsString = 'servicos=8'
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace: push }),
   usePathname: () => '/explorar',
-  useSearchParams: () => new URLSearchParams('servicos=8'),
+  useSearchParams: () => new URLSearchParams(searchParamsString),
 }))
 
 const generos: Genre[] = [
@@ -20,6 +24,7 @@ const generos: Genre[] = [
 
 beforeEach(() => {
   push.mockClear()
+  searchParamsString = 'servicos=8'
 })
 
 describe('FilterBar', () => {
@@ -62,6 +67,24 @@ describe('FilterBar', () => {
 
     const destino = new URL(push.mock.calls[0][0], 'http://localhost')
     expect(destino.searchParams.has('pagina')).toBe(false)
+  })
+
+  it('oferece uma opcao de nota 7,5, valor usado pelo trilho "Muito bem avaliados"', () => {
+    render(<FilterBar genres={generos} />)
+
+    const select = screen.getByLabelText('Nota mínima') as HTMLSelectElement
+    const valores = Array.from(select.options).map((opcao) => opcao.value)
+
+    expect(valores).toContain('7.5')
+  })
+
+  it('exibe nota=7.5 da URL selecionado, em vez de cair para "Qualquer"', () => {
+    searchParamsString = 'servicos=8&nota=7.5'
+    render(<FilterBar genres={generos} />)
+
+    const select = screen.getByLabelText('Nota mínima') as HTMLSelectElement
+
+    expect(select.value).toBe('7.5')
   })
 
   it('nao tem violacoes de acessibilidade', async () => {
