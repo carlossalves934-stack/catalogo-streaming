@@ -7,7 +7,7 @@ import type { Provider } from '@/lib/tmdb/types'
 
 type Props = {
   providers: Provider[]
-  onConfirm?: () => void
+  onConfirm?: (ids: number[]) => void
 }
 
 export function ProviderPicker({ providers, onConfirm }: Props) {
@@ -44,7 +44,11 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
   function confirmar(ids: number[]) {
     setProviders(ids)
     completeOnboarding()
-    onConfirm?.()
+    // Repassa os ids recém-confirmados diretamente, em vez de deixar quem
+    // escuta reler o localStorage: essa releitura dependia de a atualização
+    // de estado acima já ter sido aplicada de forma síncrona, o que o React
+    // não garante.
+    onConfirm?.(ids)
   }
 
   return (

@@ -3,19 +3,12 @@ import { MovieRail } from '@/components/movie-rail'
 import { MovieRailSkeleton } from '@/components/skeletons'
 import { ProviderGate } from '@/components/provider-gate'
 import { railDefinitions, type RailDefinition } from '@/lib/rails'
+import { idsDeServicos } from '@/lib/servicos'
 import { discoverMovies } from '@/lib/tmdb/discover'
 import { getProviders } from '@/lib/tmdb/providers'
 
 type Props = {
   searchParams: Promise<{ servicos?: string }>
-}
-
-function idsDeServicos(bruto: string | undefined): number[] {
-  if (!bruto) return []
-  return bruto
-    .split(',')
-    .map(Number)
-    .filter((n) => Number.isFinite(n))
 }
 
 async function Trilho({
@@ -54,13 +47,19 @@ async function Trilho({
 
 export default async function HomePage({ searchParams }: Props) {
   const { servicos } = await searchParams
-  const providerIds = idsDeServicos(servicos)
   const definicoes = railDefinitions(new Date())
 
-  if (providerIds.length === 0) {
+  // O gate é a AUSÊNCIA do parâmetro, não a lista de ids vinda dele: quem
+  // escolhe "Ver tudo, sem filtrar" também acaba com lista vazia, e gatear
+  // no tamanho da lista prenderia essa pessoa no onboarding para sempre.
+  // A URL com `servicos` presente (mesmo que aponte para "todos") é o sinal
+  // de que a escolha já foi feita.
+  if (servicos === undefined) {
     const provedores = await getProviders()
     return <ProviderGate providers={provedores} />
   }
+
+  const providerIds = idsDeServicos(servicos)
 
   return (
     <div className="mx-auto max-w-6xl py-4">

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { ProviderPicker } from './provider-picker'
 import { usePreferences } from '@/lib/hooks/use-preferences'
-import { readPreferences } from '@/lib/storage'
+import { SEM_FILTRO } from '@/lib/servicos'
 import type { Provider } from '@/lib/tmdb/types'
 
 type Props = {
@@ -19,30 +19,37 @@ type Props = {
   redirectWhenConfigured?: boolean
 }
 
+function urlComServicos(ids: number[]): string {
+  return `/?servicos=${ids.length > 0 ? ids.join(',') : SEM_FILTRO}`
+}
+
 export function ProviderGate({ providers, redirectWhenConfigured = true }: Props) {
   const router = useRouter()
   const { preferences, hydrated } = usePreferences()
 
-  // Quem já escolheu antes não deve ver esta tela de novo — exceto quando
-  // o redirecionamento foi explicitamente desligado (tela de edição).
   useEffect(() => {
     if (!hydrated || !redirectWhenConfigured) return
-    if (preferences.providerIds.length > 0) {
-      router.replace(`/?servicos=${preferences.providerIds.join(',')}`)
+    // `hasOnboarded`, não o tamanho de `providerIds`, é quem sabe se a
+    // pessoa já decidiu — inclusive quando a decisão foi "ver tudo, sem
+    // filtrar", que também salva `providerIds: []`. Gatear no tamanho da
+    // lista confundiria esse caso com "ainda não escolheu" e prenderia essa
+    // pessoa neste formulário para sempre.
+    if (preferences.hasOnboarded) {
+      router.replace(urlComServicos(preferences.providerIds))
     }
-  }, [hydrated, redirectWhenConfigured, preferences.providerIds, router])
+  }, [hydrated, redirectWhenConfigured, preferences.hasOnboarded, preferences.providerIds, router])
 
   return (
     <ProviderPicker
       providers={providers}
-      onConfirm={() => {
-        // Ruling T11-a: lê pelo módulo que sabe o formato salvo, em vez de
-        // reimplementar o parse aqui. Isso evita duplicar conhecimento do
-        // formato fora de lib/storage.ts e, principalmente, ganha de graça
-        // o try/catch que protege contra localStorage indisponível (aba
-        // anônima) — um JSON.parse cru quebraria esta tela nesse caso.
-        const { providerIds } = readPreferences()
-        router.push(providerIds.length > 0 ? `/?servicos=${providerIds.join(',')}` : '/explorar')
+      onConfirm={(ids) => {
+        // Navega com os ids recebidos diretamente do picker, sem reler o
+        // localStorage: essa releitura dependeria de a gravação já ter
+        // acontecido de forma síncrona, o que o React não garante. Uma
+        // seleção vazia é "ver tudo, sem filtrar" — não existe rota
+        // /explorar ainda, e mesmo que existisse, "ver tudo" é a própria
+        // Home sem filtro, não uma página separada.
+        router.push(urlComServicos(ids))
       }}
     />
   )
