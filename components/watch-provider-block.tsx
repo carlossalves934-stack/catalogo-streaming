@@ -28,6 +28,15 @@ function Secao({
           return (
             <li
               key={provedor.id}
+              // Auditoria da Task 15 (seguimento, §12.3): border-neutral-700
+              // aqui mede ~1.9:1, abaixo do 3:1 de contorno de interface —
+              // mas deixado como está de propósito. Este <li> não é um
+              // controle interativo (não há clique, não há estado que o
+              // usuário altere aqui), e quando "assinado" é verdade a
+              // informação já é dada por texto explícito logo abaixo
+              // ("Você assina"), não só pela cor/borda. A borda é reforço
+              // decorativo redundante, não o único meio de identificar o
+              // estado — por isso o WCAG 1.4.11 não a exige em 3:1.
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
                 assinado ? 'border-sky-400 bg-sky-950/40' : 'border-neutral-700'
               }`}

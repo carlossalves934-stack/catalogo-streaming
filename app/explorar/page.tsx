@@ -96,7 +96,11 @@ export default async function ExplorarPage({ searchParams }: Props) {
             {pagina > 1 && (
               <Link
                 href={urlDaPagina(pagina - 1)}
-                className="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                // §12.3 — minimo 3:1 para borda de elemento de interface:
+                // neutral-700 media ~1.9:1 contra o fundo da pagina; trocado
+                // por neutral-500 (4.18:1). Hover sobe para neutral-400
+                // (7.63:1) para continuar mais claro que o estado normal.
+                className="rounded-lg border border-neutral-500 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
               >
                 Página anterior
               </Link>
@@ -104,7 +108,11 @@ export default async function ExplorarPage({ searchParams }: Props) {
             {pagina < resultado.totalPages && (
               <Link
                 href={urlDaPagina(pagina + 1)}
-                className="rounded-lg border border-neutral-700 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                // §12.3 — minimo 3:1 para borda de elemento de interface:
+                // neutral-700 media ~1.9:1 contra o fundo da pagina; trocado
+                // por neutral-500 (4.18:1). Hover sobe para neutral-400
+                // (7.63:1) para continuar mais claro que o estado normal.
+                className="rounded-lg border border-neutral-500 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
               >
                 Próxima página
               </Link>
