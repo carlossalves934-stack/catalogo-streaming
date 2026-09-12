@@ -68,8 +68,17 @@ export function WatchProviderBlock({ options, subscribedIds }: Props) {
             provedores={options.flatrate}
             subscribedIds={subscribedIds}
           />
-          <Secao titulo="Alugar" provedores={options.rent} subscribedIds={subscribedIds} />
-          <Secao titulo="Comprar" provedores={options.buy} subscribedIds={subscribedIds} />
+          {/*
+            "Você assina" só pode aparecer aqui em cima. Um provedor pode
+            vender assinatura E aluguel (a Apple TV é o caso concreto) — se
+            "Alugar"/"Comprar" recebessem subscribedIds, alguém que assina
+            aquele provedor veria o selo de assinatura ao lado de um preço de
+            aluguel, exatamente a confusão que a spec proíbe (rent for
+            R$14,90 ≠ incluso no plano). Por isso as duas seções abaixo
+            recebem lista vazia, não subscribedIds.
+          */}
+          <Secao titulo="Alugar" provedores={options.rent} subscribedIds={[]} />
+          <Secao titulo="Comprar" provedores={options.buy} subscribedIds={[]} />
 
           {options.tmdbLink && (
             <p className="mt-4 text-xs text-neutral-500">

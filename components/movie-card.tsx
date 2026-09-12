@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Movie, WatchOptions } from '@/lib/tmdb/types'
+import { MovieRating } from './movie-rating'
 import { WatchlistButton } from './watchlist-button'
 
 type Props = {
@@ -62,11 +63,7 @@ export function MovieCard({ movie, availability, servicos }: Props) {
 
       <p className="mt-1 flex items-center gap-2 text-xs text-neutral-400">
         {movie.releaseYear !== null && <span>{movie.releaseYear}</span>}
-        {movie.rating !== null && (
-          <span role="group" aria-label={`Nota ${movie.rating.toFixed(1)} de 10`}>
-            <span aria-hidden="true">★ {movie.rating.toFixed(1)}</span>
-          </span>
-        )}
+        <MovieRating rating={movie.rating} />
       </p>
 
       {availability && availability.flatrate.length > 0 && (

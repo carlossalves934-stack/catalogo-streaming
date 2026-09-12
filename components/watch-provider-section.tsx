@@ -16,6 +16,11 @@ type Props = {
  * A página de detalhe (Server Component) só carrega e repassa `options`.
  */
 export function WatchProviderSection({ options }: Props) {
+  // Ignora `hydrated` de propósito: antes da hidratação, `preferences` já
+  // é PREFERENCIAS_PADRAO (providerIds: []), que é exatamente o estado
+  // "nada destacado" — o mesmo que se veria depois de hidratar sem nenhum
+  // serviço assinado. Não há flash incorreto a evitar aqui, então gatear a
+  // renderização em `hydrated` não mudaria nada visível.
   const { preferences } = usePreferences()
 
   return <WatchProviderBlock options={options} subscribedIds={preferences.providerIds} />

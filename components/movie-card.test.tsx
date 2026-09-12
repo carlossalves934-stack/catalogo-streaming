@@ -56,6 +56,19 @@ describe('MovieCard', () => {
     )
   })
 
+  it('inclui o parametro servicos no link quando informado', () => {
+    // Ruling T13-a(b): o link do filme precisa carregar o filtro de
+    // catálogo em uso, para que a página de detalhe filtre os similares
+    // pelo mesmo recorte — sem este teste, o encodeURIComponent daquela
+    // regra fica sem cobertura.
+    render(<MovieCard movie={filme} servicos="8,119" />)
+
+    expect(screen.getByRole('link', { name: /Duna: Parte 2/ })).toHaveAttribute(
+      'href',
+      '/filme/693134?servicos=8%2C119',
+    )
+  })
+
   it('mostra badges apenas quando a disponibilidade e informada', () => {
     const { rerender } = render(<MovieCard movie={filme} />)
     expect(screen.queryByTestId('badges-disponibilidade')).not.toBeInTheDocument()

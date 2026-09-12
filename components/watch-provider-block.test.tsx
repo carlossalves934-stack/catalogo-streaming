@@ -37,6 +37,16 @@ describe('WatchProviderBlock', () => {
     expect(screen.queryByText('Você assina')).not.toBeInTheDocument()
   })
 
+  it('nao destaca aluguel ou compra mesmo quando o provedor tambem esta na assinatura', () => {
+    // Apple TV (id 2) aparece em rent e buy no fixture `completo`, mas não
+    // em flatrate. Assinar o id 2 nunca deve acender "Você assina" nessas
+    // duas seções — o selo significa "incluso no seu plano", o que nunca é
+    // verdade para aluguel ou compra.
+    render(<WatchProviderBlock options={completo} subscribedIds={[2]} />)
+
+    expect(screen.queryByText('Você assina')).not.toBeInTheDocument()
+  })
+
   it('omite secoes vazias', () => {
     render(
       <WatchProviderBlock

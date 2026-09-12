@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { MovieRail } from '@/components/movie-rail'
+import { MovieRating } from '@/components/movie-rating'
 import { MovieRailSkeleton } from '@/components/skeletons'
 import { WatchProviderSection } from '@/components/watch-provider-section'
 import { WatchlistButton } from '@/components/watchlist-button'
@@ -18,13 +19,19 @@ async function Similares({
   id,
   genreId,
   providerIds,
+  servicos,
 }: {
   id: number
   genreId: number
   providerIds: number[]
+  servicos?: string
 }) {
   const filmes = await getSimilarMovies(id, genreId, providerIds)
-  return <MovieRail title="Você também pode gostar" movies={filmes} />
+  // Ruling T13-a / Finding 3 da revisão: repassa `servicos` para que os
+  // cards desta trilha carreguem o mesmo filtro ao navegar — sem isso, o
+  // segundo filme que a pessoa abre a partir daqui perde o recorte de
+  // catálogo que esta tarefa existe para preservar.
+  return <MovieRail title="Você também pode gostar" movies={filmes} servicos={servicos} />
 }
 
 export default async function FilmePage({ params, searchParams }: Props) {
@@ -74,11 +81,7 @@ export default async function FilmePage({ params, searchParams }: Props) {
           <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
             {filme.releaseYear !== null && <span>{filme.releaseYear}</span>}
             {filme.runtimeMinutes !== null && <span>{filme.runtimeMinutes} min</span>}
-            {filme.rating !== null && (
-              <span aria-label={`Nota ${filme.rating.toFixed(1)} de 10`}>
-                <span aria-hidden="true">★ {filme.rating.toFixed(1)}</span>
-              </span>
-            )}
+            <MovieRating rating={filme.rating} />
           </p>
 
           {filme.genres.length > 0 && (
@@ -128,7 +131,12 @@ export default async function FilmePage({ params, searchParams }: Props) {
 
       {generoPrincipal !== undefined && (
         <Suspense fallback={<MovieRailSkeleton />}>
-          <Similares id={filme.id} genreId={generoPrincipal} providerIds={providerIds} />
+          <Similares
+            id={filme.id}
+            genreId={generoPrincipal}
+            providerIds={providerIds}
+            servicos={servicos}
+          />
         </Suspense>
       )}
     </article>
