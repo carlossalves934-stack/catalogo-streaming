@@ -63,6 +63,19 @@ export function WatchlistView() {
   }
 
   if (filmes.length === 0) {
+    // `ids !== ''` distingue "nunca salvou nada" de "salvou, mas nenhum id
+    // resolveu no TMDB" (cada filme 404 upstream) — sem essa distinção, a
+    // segunda situação mostraria a mesma mensagem da primeira e diria à
+    // pessoa que ela nunca guardou nada, quando na verdade guardou.
+    if (ids !== '') {
+      return (
+        <EmptyState
+          title="Não foi possível carregar sua lista"
+          hint="Os filmes salvos não puderam ser encontrados agora. Tente novamente mais tarde."
+        />
+      )
+    }
+
     return (
       <EmptyState
         title="Sua lista está vazia"

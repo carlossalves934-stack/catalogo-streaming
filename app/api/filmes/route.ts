@@ -28,11 +28,15 @@ function paraMovie(filme: Awaited<ReturnType<typeof getMovie>>): Movie {
 }
 
 export async function GET(request: Request) {
-  const ids = (new URL(request.url).searchParams.get('ids') ?? '')
+  const brutos = (new URL(request.url).searchParams.get('ids') ?? '')
     .split(',')
     .map(Number)
-    .filter((n) => Number.isFinite(n) && n > 0)
-    .slice(0, MAXIMO_DE_IDS)
+    .filter((n) => Number.isInteger(n) && n > 0)
+
+  // Dedupe antes do teto: "ids=1,1,1,…" (50 vezes) sem isso vira 50 chamadas
+  // concorrentes a getMovie(1) contra as credenciais do TMDB — pura
+  // amplificação, já que ids repetidos nunca produzem um resultado a mais.
+  const ids = Array.from(new Set(brutos)).slice(0, MAXIMO_DE_IDS)
 
   if (ids.length === 0) {
     return NextResponse.json({ movies: [] })

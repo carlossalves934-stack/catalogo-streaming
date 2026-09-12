@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   PREFERENCIAS_PADRAO,
   readPreferences,
+  subscribe,
   writePreferences,
   type Preferences,
 } from '@/lib/storage'
@@ -22,12 +23,25 @@ export function usePreferences() {
     setHydrated(true)
   }, [])
 
+  // Mantém esta instância em dia com escritas feitas por qualquer outra
+  // instância de usePreferences() (outro botão, outra página). O setState
+  // fica dentro do callback passado a subscribe(), não no corpo do efeito —
+  // é isso (como o .then()/.finally() em watchlist-view.tsx) que mantém a
+  // regra react-hooks/set-state-in-effect satisfeita sem eslint-disable:
+  // ela não é acionada por um setState assíncrono, só por um síncrono no
+  // topo do efeito.
+  useEffect(() => subscribe(() => setPreferences(readPreferences())), [])
+
+  // Lê de readPreferences() (a fonte real), não do `preferences` fechado no
+  // closure deste callback: agora que outras instâncias também escrevem,
+  // o estado local desta pode estar um passo atrás do localStorage no
+  // instante do clique. Escrever e depois já aplicar `proximo` localmente
+  // (em vez de só esperar a notificação de subscribe()) evita um piscar
+  // onde esta instância mostraria o valor antigo por um instante.
   const atualizar = useCallback((mudanca: Partial<Preferences>) => {
-    setPreferences((atual) => {
-      const proximo = { ...atual, ...mudanca }
-      writePreferences(proximo)
-      return proximo
-    })
+    const proximo = { ...readPreferences(), ...mudanca }
+    writePreferences(proximo)
+    setPreferences(proximo)
   }, [])
 
   const setProviders = useCallback(
@@ -35,20 +49,16 @@ export function usePreferences() {
     [atualizar],
   )
 
-  const toggleWatchlist = useCallback(
-    (id: number) => {
-      setPreferences((atual) => {
-        const jaSalvo = atual.watchlist.includes(id)
-        const watchlist = jaSalvo
-          ? atual.watchlist.filter((salvo) => salvo !== id)
-          : [...atual.watchlist, id]
-        const proximo = { ...atual, watchlist }
-        writePreferences(proximo)
-        return proximo
-      })
-    },
-    [],
-  )
+  const toggleWatchlist = useCallback((id: number) => {
+    const atual = readPreferences()
+    const jaSalvo = atual.watchlist.includes(id)
+    const watchlist = jaSalvo
+      ? atual.watchlist.filter((salvo) => salvo !== id)
+      : [...atual.watchlist, id]
+    const proximo = { ...atual, watchlist }
+    writePreferences(proximo)
+    setPreferences(proximo)
+  }, [])
 
   const completeOnboarding = useCallback(
     () => atualizar({ hasOnboarded: true }),
