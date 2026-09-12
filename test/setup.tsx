@@ -11,7 +11,7 @@ afterEach(() => {
 
 vi.mock('next/image', () => ({
   default: ({ src, alt, ...rest }: { src: string; alt: string }) => {
-    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+    // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={alt} {...rest} />
   },
 }))

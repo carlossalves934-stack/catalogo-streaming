@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { PREFERENCIAS_PADRAO, writePreferences } from '@/lib/storage'
 import { usePreferences } from './use-preferences'
 

@@ -4,11 +4,14 @@
 // em test/setup.tsx.
 import 'vitest'
 
-interface AxeMatchers<R = unknown> {
-  toHaveNoViolations(): R
-}
-
 declare module 'vitest' {
-  interface Assertion<T = unknown> extends AxeMatchers<T> {}
-  interface AsymmetricMatchersContaining extends AxeMatchers {}
+  // Declarado diretamente na interface (em vez de herdar de um supertipo vazio)
+  // para continuar mesclando com as interfaces do Vitest sem violar
+  // @typescript-eslint/no-empty-object-type.
+  interface Assertion<T = unknown> {
+    toHaveNoViolations(): T
+  }
+  interface AsymmetricMatchersContaining {
+    toHaveNoViolations(): unknown
+  }
 }

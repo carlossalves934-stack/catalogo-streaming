@@ -13,6 +13,11 @@ export function usePreferences() {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
+    // Este efeito roda exatamente uma vez após o mount (deps vazias) e existe
+    // para satisfazer um requisito rígido: o localStorage só pode ser lido
+    // após o mount, senão o HTML renderizado no servidor diverge do primeiro
+    // render do cliente. Ler localStorage durante o render quebraria a hidratação.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreferences(readPreferences())
     setHydrated(true)
   }, [])
