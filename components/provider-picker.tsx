@@ -70,11 +70,11 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
             return (
               <li key={provedor.id}>
                 <label
-                  // §12.3 — minimo 3:1 para borda de elemento de interface.
-                  // A borda marcada (sky-400) já media 9.08:1 contra a
+                  // §12.3 — mínimo 3:1 para borda de elemento de interface.
+                  // A borda marcada (sky-400) já mede 9.08:1 contra a
                   // página e 8.20:1 contra o próprio fundo do card
                   // selecionado — sem alteração. A borda não-marcada
-                  // (neutral-700) media ~1.9:1; trocada por neutral-500
+                  // (neutral-700) mede ~1.9:1; trocada por neutral-500
                   // (4.18:1). Hover sobe para neutral-400 (7.63:1) para
                   // continuar mais claro que o estado normal.
                   className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-3 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-400 ${

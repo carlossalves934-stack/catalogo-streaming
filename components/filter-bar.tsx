@@ -16,11 +16,11 @@ const ORDENACOES = [
 ]
 
 // Ruling do controller (Task 15, seguimento): border-neutral-700 contra
-// bg-neutral-950/bg-neutral-900 media ~1.9:1, abaixo do minimo de 3:1 que o
+// bg-neutral-950/bg-neutral-900 mede ~1.9:1, abaixo do mínimo de 3:1 que o
 // spec (§12.3) exige para o contorno de um controle de interface. Trocado
-// por neutral-500 (4.18:1 contra a pagina, 3.79:1 contra o proprio fundo
-// do select) — o tom mais claro da escala que ainda soa "quase invisivel"
-// no visual escuro, mas cruza o minimo nos dois contextos.
+// por neutral-500 (4.18:1 contra a página, 3.79:1 contra o próprio fundo
+// do select) — o tom mais claro da escala que ainda soa "quase invisível"
+// no visual escuro, mas cruza o mínimo nos dois contextos.
 const CLASSE_SELECT =
   'rounded-lg border border-neutral-500 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400'
 
