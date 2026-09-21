@@ -65,8 +65,8 @@ export default async function ExplorarPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl py-4">
-      <h1 className="px-4 text-2xl font-semibold text-neutral-100">Explorar</h1>
+    <div className="mx-auto max-w-7xl py-8">
+      <h1 className="titulo px-4 text-2xl font-semibold text-texto sm:px-6 sm:text-3xl">Explorar</h1>
 
       <FilterBar genres={generos} />
 
@@ -83,7 +83,7 @@ export default async function ExplorarPage({ searchParams }: Props) {
           {/* role="status" anuncia a contagem para leitores de tela sem
               precisar de foco — trocar um filtro muda o resultado sem
               recarregar a página. */}
-          <p className="px-4 pb-2 text-sm text-neutral-400" role="status">
+          <p className="px-4 pb-2 text-sm text-nevoa" role="status">
             {resultado.totalResults.toLocaleString('pt-BR')} filmes encontrados
           </p>
 
@@ -97,10 +97,10 @@ export default async function ExplorarPage({ searchParams }: Props) {
               <Link
                 href={urlDaPagina(pagina - 1)}
                 // §12.3 — mínimo 3:1 para borda de elemento de interface:
-                // neutral-700 mede ~1.9:1 contra o fundo da página; trocado
-                // por neutral-500 (4.18:1). Hover sobe para neutral-400
-                // (7.63:1) para continuar mais claro que o estado normal.
-                className="rounded-lg border border-neutral-500 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                // `borda` mede ~1.3:1 contra a página e não serve aqui;
+                // `contorno` mede 3.3:1. Hover sobe para `nevoa` (7.6:1)
+                // para continuar mais claro que o estado normal.
+                className="rounded-lg border border-contorno px-4 py-2 text-sm text-texto transition hover:border-nevoa focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
               >
                 Página anterior
               </Link>
@@ -109,10 +109,10 @@ export default async function ExplorarPage({ searchParams }: Props) {
               <Link
                 href={urlDaPagina(pagina + 1)}
                 // §12.3 — mínimo 3:1 para borda de elemento de interface:
-                // neutral-700 mede ~1.9:1 contra o fundo da página; trocado
-                // por neutral-500 (4.18:1). Hover sobe para neutral-400
-                // (7.63:1) para continuar mais claro que o estado normal.
-                className="rounded-lg border border-neutral-500 px-4 py-2 text-sm text-neutral-200 transition hover:border-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                // `borda` mede ~1.3:1 contra a página e não serve aqui;
+                // `contorno` mede 3.3:1. Hover sobe para `nevoa` (7.6:1)
+                // para continuar mais claro que o estado normal.
+                className="rounded-lg border border-contorno px-4 py-2 text-sm text-texto transition hover:border-nevoa focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
               >
                 Próxima página
               </Link>

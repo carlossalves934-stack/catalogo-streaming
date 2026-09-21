@@ -1,6 +1,6 @@
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-neutral-800 px-4 py-8 text-sm text-neutral-400">
+    <footer className="mt-16 border-t border-borda px-4 py-8 text-sm text-nevoa">
       <div className="mx-auto max-w-6xl space-y-2">
         <p>
           This product uses the TMDB API but is not endorsed or certified by TMDB.

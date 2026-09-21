@@ -41,38 +41,45 @@ export function MovieCard({ movie, availability, servicos, headingLevel = 3 }: P
     : `/filme/${movie.id}`
 
   return (
-    <article className="group relative w-40 shrink-0 sm:w-44">
-      <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-neutral-800">
+    <article className="group relative w-40 shrink-0 sm:w-48">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-sala ring-1 ring-borda transition-shadow duration-200 group-hover:ring-contorno">
         {movie.posterUrl ? (
           <Image
             src={movie.posterUrl}
             alt={`Pôster de ${movie.title}`}
             fill
-            sizes="(max-width: 640px) 40vw, 176px"
-            className="object-cover transition group-hover:scale-105"
+            sizes="(max-width: 640px) 40vw, 192px"
+            className="object-cover"
           />
         ) : (
           <p
             data-testid="poster-ausente"
-            className="flex h-full items-center justify-center p-3 text-center text-sm text-neutral-400"
+            className="titulo flex h-full items-center justify-center p-3 text-center text-sm text-nevoa"
           >
             {movie.title}
           </p>
         )}
 
-        <div className="absolute right-2 top-2">
+        {/*
+          A estrela some quando não está salva e o cartão está em repouso:
+          sobre o pôster ela vira ruído. Foco e hover a trazem de volta, e
+          quem já salvou o filme continua vendo o estado sempre.
+        */}
+        <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 has-[[aria-pressed=true]]:opacity-100">
           <WatchlistButton movieId={movie.id} title={movie.title} />
         </div>
       </div>
 
       <Link
         href={hrefFilme}
-        className="mt-2 block rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+        className="mt-3 block rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
       >
-        <Titulo className="line-clamp-2 text-sm font-medium text-neutral-100">{movie.title}</Titulo>
+        <Titulo className="line-clamp-2 text-sm font-medium leading-snug text-texto">
+          {movie.title}
+        </Titulo>
       </Link>
 
-      <p className="mt-1 flex items-center gap-2 text-xs text-neutral-400">
+      <p className="mt-1.5 flex items-center gap-2 text-xs text-nevoa">
         {movie.releaseYear !== null && <span>{movie.releaseYear}</span>}
         <MovieRating rating={movie.rating} />
       </p>
@@ -90,7 +97,7 @@ export function MovieCard({ movie, availability, servicos, headingLevel = 3 }: P
                   className="rounded"
                 />
               ) : (
-                <span className="text-xs text-neutral-400">{provedor.name}</span>
+                <span className="text-xs text-nevoa">{provedor.name}</span>
               )}
             </li>
           ))}

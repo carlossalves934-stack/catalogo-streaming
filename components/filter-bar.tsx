@@ -15,16 +15,16 @@ const ORDENACOES = [
   { valor: 'releaseDate', rotulo: 'Mais recentes' },
 ]
 
-// Ruling do controller (Task 15, seguimento): border-neutral-700 contra
-// bg-neutral-950/bg-neutral-900 mede ~1.9:1, abaixo do mínimo de 3:1 que o
+// Ruling do controller (Task 15, seguimento): border-borda contra
+// bg-noite/bg-sala mede ~1.3:1, abaixo do mínimo de 3:1 que o
 // spec (§12.3) exige para o contorno de um controle de interface. Trocado
-// por neutral-500 (4.18:1 contra a página, 3.79:1 contra o próprio fundo
-// do select) — o tom mais claro da escala que ainda soa "quase invisível"
-// no visual escuro, mas cruza o mínimo nos dois contextos.
+// por `contorno` (3.3:1 contra a página, 3.0:1 contra o próprio fundo
+// do select) — o tom mais escuro que ainda soa "quase invisível" no visual
+// escuro, mas cruza o mínimo nos dois contextos.
 const CLASSE_SELECT =
-  'rounded-lg border border-neutral-500 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400'
+  'rounded-lg border border-contorno bg-sala px-3 py-2 text-sm text-texto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna'
 
-const CLASSE_ROTULO = 'text-xs text-neutral-400'
+const CLASSE_ROTULO = 'text-xs text-nevoa'
 
 type Props = {
   genres: Genre[]

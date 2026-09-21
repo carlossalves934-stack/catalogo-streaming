@@ -31,12 +31,12 @@ export default async function BuscaPage({ searchParams }: Props) {
   )
 
   return (
-    <div className="mx-auto max-w-6xl py-4">
-      <h1 className="px-4 text-2xl font-semibold text-neutral-100">Buscar</h1>
+    <div className="mx-auto max-w-7xl py-8">
+      <h1 className="titulo px-4 text-2xl font-semibold text-texto sm:px-6 sm:text-3xl">Buscar</h1>
 
       <SearchForm />
 
-      <div role="status" aria-live="polite" className="px-4 pb-2 text-sm text-neutral-400">
+      <div role="status" aria-live="polite" className="px-4 pb-2 text-sm text-nevoa">
         {termo === ''
           ? ''
           : `${resultado.totalResults.toLocaleString('pt-BR')} resultados para "${termo}"`}

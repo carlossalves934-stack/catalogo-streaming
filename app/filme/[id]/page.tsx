@@ -70,22 +70,24 @@ export default async function FilmePage({ params, searchParams }: Props) {
             className="w-40 shrink-0 rounded-lg sm:w-56"
           />
         ) : (
-          <div className="flex h-80 w-40 shrink-0 items-center justify-center rounded-lg bg-neutral-800 p-4 text-center text-sm text-neutral-400 sm:w-56">
+          <div className="flex h-80 w-40 shrink-0 items-center justify-center rounded-lg bg-sala p-4 text-center text-sm text-nevoa sm:w-56">
             {filme.title}
           </div>
         )}
 
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold text-neutral-100">{filme.title}</h1>
+          <h1 className="titulo text-3xl font-semibold leading-tight text-texto sm:text-4xl">
+            {filme.title}
+          </h1>
 
-          <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
+          <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-nevoa">
             {filme.releaseYear !== null && <span>{filme.releaseYear}</span>}
             {filme.runtimeMinutes !== null && <span>{filme.runtimeMinutes} min</span>}
             <MovieRating rating={filme.rating} />
           </p>
 
           {filme.genres.length > 0 && (
-            <p className="mt-2 text-sm text-neutral-400">
+            <p className="mt-2 text-sm text-nevoa">
               {filme.genres.map((g) => g.name).join(' · ')}
             </p>
           )}
@@ -94,7 +96,7 @@ export default async function FilmePage({ params, searchParams }: Props) {
             <WatchlistButton movieId={filme.id} title={filme.title} />
           </div>
 
-          {filme.overview && <p className="mt-4 text-neutral-200">{filme.overview}</p>}
+          {filme.overview && <p className="mt-4 text-texto">{filme.overview}</p>}
         </div>
       </div>
 
@@ -102,7 +104,7 @@ export default async function FilmePage({ params, searchParams }: Props) {
 
       {filme.trailerYoutubeKey && (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-neutral-100">Trailer</h2>
+          <h2 className="text-lg font-semibold text-texto">Trailer</h2>
           <div className="mt-3 aspect-video overflow-hidden rounded-lg">
             <iframe
               src={`https://www.youtube.com/embed/${filme.trailerYoutubeKey}`}
@@ -117,12 +119,12 @@ export default async function FilmePage({ params, searchParams }: Props) {
 
       {filme.cast.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-neutral-100">Elenco</h2>
+          <h2 className="text-lg font-semibold text-texto">Elenco</h2>
           <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {filme.cast.map((pessoa) => (
               <li key={pessoa.id} className="text-sm">
-                <p className="text-neutral-100">{pessoa.name}</p>
-                <p className="text-neutral-400">{pessoa.character}</p>
+                <p className="text-texto">{pessoa.name}</p>
+                <p className="text-nevoa">{pessoa.character}</p>
               </li>
             ))}
           </ul>

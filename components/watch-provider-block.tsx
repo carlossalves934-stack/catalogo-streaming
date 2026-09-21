@@ -20,7 +20,7 @@ function Secao({
 
   return (
     <div className="mt-4">
-      <h3 className="text-sm font-medium text-neutral-300">{titulo}</h3>
+      <h3 className="text-sm font-medium text-nevoa">{titulo}</h3>
       <ul className="mt-2 flex flex-wrap gap-3">
         {provedores.map((provedor) => {
           const assinado = subscribedIds.includes(provedor.id)
@@ -28,7 +28,7 @@ function Secao({
           return (
             <li
               key={provedor.id}
-              // Auditoria da Task 15 (seguimento, §12.3): border-neutral-700
+              // Auditoria da Task 15 (seguimento, §12.3): border-borda
               // aqui mede ~1.9:1, abaixo do 3:1 de contorno de interface —
               // mas deixado como está de propósito. Este <li> não é um
               // controle interativo (não há clique, não há estado que o
@@ -38,15 +38,15 @@ function Secao({
               // decorativo redundante, não o único meio de identificar o
               // estado — por isso o WCAG 1.4.11 não a exige em 3:1.
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                assinado ? 'border-sky-400 bg-sky-950/40' : 'border-neutral-700'
+                assinado ? 'border-lanterna bg-lanterna/10' : 'border-borda'
               }`}
             >
               {provedor.logoUrl && (
                 <Image src={provedor.logoUrl} alt="" width={28} height={28} className="rounded" />
               )}
-              <span className="text-sm text-neutral-100">{provedor.name}</span>
+              <span className="text-sm text-texto">{provedor.name}</span>
               {assinado && (
-                <span className="text-xs font-medium text-sky-400">Você assina</span>
+                <span className="text-xs font-medium text-lanterna">Você assina</span>
               )}
             </li>
           )
@@ -62,12 +62,12 @@ export function WatchProviderBlock({ options, subscribedIds }: Props) {
 
   return (
     <section aria-labelledby="onde-assistir" className="mt-8">
-      <h2 id="onde-assistir" className="text-lg font-semibold text-neutral-100">
+      <h2 id="onde-assistir" className="text-lg font-semibold text-texto">
         Onde assistir
       </h2>
 
       {semNada ? (
-        <p className="mt-2 text-sm text-neutral-400">
+        <p className="mt-2 text-sm text-nevoa">
           Este filme não está disponível em nenhum serviço no Brasil no momento.
         </p>
       ) : (
@@ -90,15 +90,14 @@ export function WatchProviderBlock({ options, subscribedIds }: Props) {
           <Secao titulo="Comprar" provedores={options.buy} subscribedIds={[]} />
 
           {options.tmdbLink && (
-            // Ruling T15-b: text-neutral-500 sobre bg-neutral-950 mede 4.18:1,
-            // abaixo do mínimo de 4.5:1 para texto pequeno — trocado por
-            // neutral-400 (7.63:1) na auditoria da Task 15.
-            <p className="mt-4 text-xs text-neutral-400">
+            // Ruling T15-b (texto pequeno, mínimo 4.5:1): `nevoa` sobre
+            // a página mede 7.6:1. O hover clareia para `texto` (16.5:1).
+            <p className="mt-4 text-xs text-nevoa">
               <a
                 href={options.tmdbLink}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded underline hover:text-neutral-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                className="rounded underline hover:text-texto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
               >
                 Ver preços e opções no JustWatch
               </a>

@@ -27,19 +27,18 @@ export function SearchForm() {
           value={termo}
           onChange={(evento) => setTermo(evento.target.value)}
           placeholder="Digite o nome de um filme"
-          // Ruling T15-b: placeholder:text-neutral-500 sobre bg-neutral-900
-          // media 3.79:1, abaixo do mínimo de 4.5:1 — trocado por neutral-400
-          // (6.91:1) na auditoria da Task 15.
+          // Ruling T15-b (texto pequeno, mínimo 4.5:1): o placeholder usa
+          // `nevoa`, que mede 7.0:1 sobre o fundo do campo.
           //
           // Seguimento (borda, §12.3 — mínimo 3:1 para elemento de
-          // interface): border-neutral-700 mede ~1.9:1 contra a página e o
-          // próprio fundo do campo; trocado por neutral-500 (4.18:1 / 3.79:1).
-          className="w-full rounded-lg border border-neutral-500 bg-neutral-900 px-4 py-2.5 text-neutral-100 placeholder:text-neutral-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          // interface): `borda` mede ~1.3:1 contra a página e contra o
+          // próprio fundo do campo; aqui vale `contorno` (3.3:1 / 3.0:1).
+          className="w-full rounded-lg border border-contorno bg-sala px-4 py-2.5 text-texto placeholder:text-nevoa focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
         />
       </div>
       <button
         type="submit"
-        className="rounded-lg bg-sky-500 px-5 py-2.5 font-medium text-neutral-950 transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+        className="rounded-lg bg-lanterna px-5 py-2.5 font-medium text-noite transition hover:bg-[#ffcb60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
       >
         Buscar
       </button>

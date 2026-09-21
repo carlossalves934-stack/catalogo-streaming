@@ -53,10 +53,10 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
 
   return (
     <section aria-labelledby="titulo-servicos" className="mx-auto max-w-3xl p-6">
-      <h1 id="titulo-servicos" className="text-2xl font-semibold text-neutral-100">
+      <h1 id="titulo-servicos" className="text-2xl font-semibold text-texto">
         Quais streamings você assina?
       </h1>
-      <p className="mt-2 text-neutral-400">
+      <p className="mt-2 text-nevoa">
         Vamos mostrar apenas filmes que você pode assistir agora, sem custo extra.
       </p>
 
@@ -71,16 +71,16 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
               <li key={provedor.id}>
                 <label
                   // §12.3 — mínimo 3:1 para borda de elemento de interface.
-                  // A borda marcada (sky-400) já mede 9.08:1 contra a
-                  // página e 8.20:1 contra o próprio fundo do card
-                  // selecionado — sem alteração. A borda não-marcada
-                  // (neutral-700) mede ~1.9:1; trocada por neutral-500
-                  // (4.18:1). Hover sobe para neutral-400 (7.63:1) para
-                  // continuar mais claro que o estado normal.
-                  className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-3 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-sky-400 ${
+                  // A borda marcada (`lanterna`) mede 10.7:1 contra a
+                  // página e 8.9:1 contra o fundo âmbar do card
+                  // selecionado. A não-marcada usa `contorno` (3.3:1), e o
+                  // hover sobe para `nevoa` (7.6:1) para continuar mais
+                  // claro que o estado normal. Marcado e não-marcado também
+                  // diferem pelo fundo, não só pela cor da borda.
+                  className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 p-3 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-lanterna ${
                     marcado
-                      ? 'border-sky-400 bg-sky-950/40'
-                      : 'border-neutral-500 hover:border-neutral-400'
+                      ? 'border-lanterna bg-lanterna/10'
+                      : 'border-contorno hover:border-nevoa'
                   }`}
                 >
                   <input
@@ -98,7 +98,7 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
                       className="rounded"
                     />
                   ) : null}
-                  <span className="text-center text-xs text-neutral-200">{provedor.name}</span>
+                  <span className="text-center text-xs text-texto">{provedor.name}</span>
                 </label>
               </li>
             )
@@ -106,7 +106,7 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
         </ul>
       </fieldset>
 
-      <p role="status" className="mt-4 text-sm text-neutral-400">
+      <p role="status" className="mt-4 text-sm text-nevoa">
         {selecionados.length === 0
           ? 'Nenhum serviço selecionado'
           : `${selecionados.length} ${selecionados.length === 1 ? 'serviço selecionado' : 'serviços selecionados'}`}
@@ -116,14 +116,14 @@ export function ProviderPicker({ providers, onConfirm }: Props) {
         <button
           type="button"
           onClick={() => confirmar(selecionados)}
-          className="rounded-lg bg-sky-500 px-5 py-2.5 font-medium text-neutral-950 transition hover:bg-sky-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          className="rounded-lg bg-lanterna px-5 py-2.5 font-medium text-noite transition hover:bg-[#ffcb60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
         >
           Confirmar
         </button>
         <button
           type="button"
           onClick={() => confirmar([])}
-          className="rounded-lg px-5 py-2.5 text-neutral-300 underline transition hover:text-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          className="rounded-lg px-5 py-2.5 text-nevoa underline transition hover:text-texto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna"
         >
           Ver tudo, sem filtrar
         </button>
