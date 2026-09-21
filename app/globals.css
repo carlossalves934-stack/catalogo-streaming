@@ -1,5 +1,51 @@
 @import "tailwindcss";
 
+/*
+  Paleta: sala de cinema, não caixa preta. O fundo é azulado de propósito —
+  o protagonismo cromático da página é do filme em cartaz, não do tema.
+*/
+@theme {
+  --color-noite: #0d1017;
+  --color-sala: #151a24;
+  --color-borda: #232b39;
+  --color-contorno: #5a6680;
+  --color-texto: #eceff4;
+  --color-nevoa: #9aa4b8;
+  --color-lanterna: #f5b841;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+  `borda` é divisória (decorativa, contraste baixo é aceitável);
+  `contorno` é borda de controle interativo e fica em 3:1 contra o fundo,
+  exigência que a auditoria de acessibilidade (spec 12.3) já tinha fixado.
+*/
+
+/*
+  Archivo tem eixo de largura. Títulos usam a versão larga: dá ar de cartela
+  de créditos sem precisar de uma segunda família tipográfica na página.
+*/
+.titulo {
+  font-variation-settings: "wdth" 118;
+  letter-spacing: -0.015em;
+}
+
+/*
+  O único movimento não pedido da página: o bloco do destaque surge uma vez,
+  no carregamento. Nada mais anima sozinho.
+*/
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Quem pediu menos movimento no sistema não deve receber animação nenhuma. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -10,4 +56,15 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/*
+  Trilhos roláveis sem barra visível: a barra do Windows cobre a base do
+  pôster. A rolagem continua acessível por teclado (tabIndex no <ul>).
+*/
+.trilho {
+  scrollbar-width: none;
+}
+.trilho::-webkit-scrollbar {
+  display: none;
 }
