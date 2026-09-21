@@ -3,6 +3,7 @@ import { axe } from 'jest-axe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EmptyState } from '@/components/empty-state'
 import { FilterBar } from '@/components/filter-bar'
+import { HeroDestaque } from '@/components/hero-destaque'
 import { MovieCardSkeleton, MovieRailSkeleton } from '@/components/skeletons'
 import { MovieGrid } from '@/components/movie-grid'
 import { MovieRail } from '@/components/movie-rail'
@@ -133,13 +134,20 @@ describe('acessibilidade — componentes sem verificação própria', () => {
 })
 
 describe('acessibilidade — composições realistas de página', () => {
-  it('layout + home com múltiplos trilhos (mesmo filme aparecendo em dois trilhos)', async () => {
+  it('layout + home com destaque e múltiplos trilhos (mesmo filme aparecendo em dois trilhos)', async () => {
     const emAlta = filme({ id: 1, title: 'Duna' })
     const bemAvaliados = [filme({ id: 1, title: 'Duna' }), filme({ id: 2, title: 'Oppenheimer' })]
+    const destaque = filme({
+      id: 3,
+      title: 'Blade Runner 2049',
+      backdropUrl: 'https://image.tmdb.org/t/p/w780/bg.jpg',
+    })
 
     const { container } = render(
       <Layout>
-        <h1 className="px-4 text-2xl font-semibold text-neutral-100">O que assistir hoje</h1>
+        {/* Na Home o h1 é invisível: quem o substitui na tela é o destaque. */}
+        <h1 className="sr-only">O que assistir hoje</h1>
+        <HeroDestaque movie={destaque} generos={generos} disponibilidade={opcoesCompletas} />
         <MovieRail title="Em alta" movies={[emAlta]} href="/explorar" />
         <MovieRail title="Muito bem avaliados" movies={bemAvaliados} href="/explorar" />
       </Layout>,

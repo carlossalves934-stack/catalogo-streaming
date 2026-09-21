@@ -18,7 +18,9 @@ export function MovieRating({ rating }: Props) {
 
   return (
     <span role="group" aria-label={`Nota ${rating.toFixed(1)} de 10`}>
-      <span aria-hidden="true">★ {rating.toFixed(1)}</span>
+      <span aria-hidden="true">
+        <span className="text-lanterna">★</span> {rating.toFixed(1)}
+      </span>
     </span>
   )
 }
