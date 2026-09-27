@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -68,6 +69,14 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
 
   const usuarioId = usuario?.id ?? null
 
+  // Guarda o usuário mais recente numa ref (nunca escrita durante a
+  // renderização, só neste efeito) para o `alternar` conferir, quando a
+  // chamada responder, se ainda é a mesma conta antes de desfazer.
+  const usuarioAtualRef = useRef<string | null>(null)
+  useEffect(() => {
+    usuarioAtualRef.current = usuarioId
+  }, [usuarioId])
+
   useEffect(() => {
     if (!usuarioId) return
 
@@ -91,6 +100,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
   const alternar = useCallback(
     (id: number) => {
       const jaSalvo = ids.includes(id)
+      const dono = usuarioId
       const aplicar = (salvar: boolean) =>
         setIds((atual) =>
           salvar ? (atual.includes(id) ? atual : [...atual, id]) : atual.filter((x) => x !== id),
@@ -100,12 +110,18 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
       const acao: Promise<ResultadoDaLista> = jaSalvo ? removerDaLista(id) : salvarNaLista(id)
       acao.then(
         (resultado) => {
+          // Se a conta trocou enquanto a chamada estava pendente, a resposta
+          // tardia não pode desfazer na lista da conta seguinte.
+          if (usuarioAtualRef.current !== dono) return
           if (!resultado.ok) aplicar(jaSalvo)
         },
-        () => aplicar(jaSalvo),
+        () => {
+          if (usuarioAtualRef.current !== dono) return
+          aplicar(jaSalvo)
+        },
       )
     },
-    [ids],
+    [ids, usuarioId],
   )
 
   const recarregar = useCallback(() => setVersao((v) => v + 1), [])

@@ -40,6 +40,7 @@ vi.mock('@/lib/watchlist/actions', () => ({
 import { WatchlistProvider, useWatchlist } from './watchlist-provider'
 
 const ANA = { user: { id: 'usuario-1', email: 'ana@exemplo.com' } }
+const BIA = { user: { id: 'usuario-2', email: 'bia@exemplo.com' } }
 
 function montar() {
   return renderHook(() => useWatchlist(), { wrapper: WatchlistProvider })
@@ -182,5 +183,37 @@ describe('useWatchlist', () => {
     sessao('SIGNED_OUT', null)
 
     expect(result.current).toMatchObject({ pronto: true, logado: false, ids: [] })
+  })
+
+  it('não desfaz o alternar de uma conta depois de trocar para outra', async () => {
+    let resolverPendente: ((resultado: { ok: boolean; motivo?: string }) => void) | undefined
+    mocks.salvarNaLista.mockReturnValue(
+      new Promise((resolve) => {
+        resolverPendente = resolve
+      }),
+    )
+    const { result } = montar()
+    sessao('INITIAL_SESSION', ANA)
+    await waitFor(() => expect(result.current.pronto).toBe(true))
+
+    // Ana alterna 550 e a chamada fica pendente (nunca resolvida ainda).
+    act(() => result.current.alternar(550))
+    expect(result.current.ids).toEqual([550])
+
+    // Ana sai, Bia entra no mesmo navegador; a lista de Bia já tem o 550
+    // (conta dela, sem relação com a chamada pendente de Ana).
+    mocks.resultadoDaLista = { data: [{ movie_id: 7 }, { movie_id: 550 }], error: null }
+    sessao('SIGNED_OUT', null)
+    sessao('SIGNED_IN', BIA)
+    await waitFor(() => expect(result.current.ids).toEqual([7, 550]))
+
+    // A chamada pendente de Ana finalmente responde com recusa: o desfazer
+    // tardio não pode tirar o 550 da lista de Bia.
+    await act(async () => {
+      resolverPendente?.({ ok: false, motivo: 'erro' })
+      await Promise.resolve()
+    })
+
+    expect(result.current.ids).toEqual([7, 550])
   })
 })
