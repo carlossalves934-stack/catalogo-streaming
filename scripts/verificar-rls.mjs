@@ -21,22 +21,7 @@ function conferir(descricao, passou, detalhe) {
   if (!passou) falhas++
 }
 
-// 1. Sem sessão, ninguém lê nada.
-const anonimo = novoCliente()
-const leitura = await anonimo.from('watchlist').select('*')
-conferir(
-  'sem sessão, o select volta vazio',
-  !leitura.error && leitura.data.length === 0,
-  leitura.error?.message ?? `${leitura.data.length} linhas`,
-)
-
-// 2. Sem sessão, ninguém escreve.
-const escrita = await anonimo
-  .from('watchlist')
-  .insert({ user_id: '00000000-0000-0000-0000-000000000000', movie_id: 1 })
-conferir('sem sessão, o insert é recusado', Boolean(escrita.error), escrita.error?.code)
-
-// 3. Duas contas: B não vê nem apaga o que é de A.
+// 1. Duas contas: A salva e B não consegue acessar.
 const carimbo = Date.now()
 const senha = `Rls-${carimbo}-senha`
 const a = novoCliente()
@@ -53,11 +38,27 @@ const idA = contaA.data.user.id
 const salvouA = await a.from('watchlist').insert({ user_id: idA, movie_id: 550 })
 conferir('A salva na própria lista', !salvouA.error, salvouA.error?.message)
 
+// 2. Sem sessão, ninguém lê dados de A.
+const anonimo = novoCliente()
+const leitura = await anonimo.from('watchlist').select('*')
+conferir(
+  'sem sessão, o select não vê dados de A',
+  !leitura.error && leitura.data?.length === 0,
+  leitura.error?.message ?? `${leitura.data?.length} linhas`,
+)
+
+// 3. Sem sessão, ninguém escreve usando id de A.
+const escrita = await anonimo
+  .from('watchlist')
+  .insert({ user_id: idA, movie_id: 13 })
+conferir('sem sessão, o insert com id de A é recusado', Boolean(escrita.error), escrita.error?.code)
+
+// 4. B não vê nem consegue salvar na lista de A.
 const falsoA = await b.from('watchlist').insert({ user_id: idA, movie_id: 13 })
 conferir('B não consegue salvar na lista de A', Boolean(falsoA.error), falsoA.error?.code)
 
 const bLe = await b.from('watchlist').select('*')
-conferir('B não vê a lista de A', !bLe.error && bLe.data.length === 0, `${bLe.data?.length} linhas`)
+conferir('B não vê a lista de A', !bLe.error && bLe.data?.length === 0, `${bLe.data?.length} linhas`)
 
 await b.from('watchlist').delete().eq('user_id', idA).eq('movie_id', 550)
 const aLe = await a.from('watchlist').select('movie_id')

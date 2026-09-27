@@ -11,7 +11,7 @@ Você informa quais streamings assina e o app passa a mostrar apenas filmes que 
 - **Descoberta personalizada** — a home monta trilhos (em alta, bem avaliados, estreias recentes, redescobertas) já filtrados pelos seus serviços.
 - **Onde assistir** — cada filme mostra a disponibilidade separada em assinatura, aluguel e compra.
 - **Explorar com filtros** — gênero, década, nota mínima e ordenação, tudo refletido na URL para que o link seja compartilhável.
-- **Minha lista** — uma watchlist guardada no próprio navegador, sem necessidade de conta.
+- **Minha lista** — uma watchlist guardada na conta do usuário (email e senha) que o segue entre navegadores e dispositivos.
 
 ## Stack
 
