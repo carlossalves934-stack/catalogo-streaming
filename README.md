@@ -38,6 +38,18 @@ Duas valem menção porque explicam o formato do app:
 
 O documento de design completo está em [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
+## Conta e Minha lista (Supabase)
+
+A Minha lista fica numa tabela do Supabase, acessada com email e senha. O resto do app funciona sem conta.
+
+1. Crie um projeto no [Supabase](https://supabase.com).
+2. Em **SQL Editor**, rode [`supabase/schema.sql`](supabase/schema.sql). Ele cria a tabela `watchlist` com RLS ligado.
+3. Em **Authentication → Providers → Email**, desligue *Confirm email*.
+4. Copie **Project URL** e a chave **publishable** (Project Settings → API Keys) para o `.env.local`, seguindo o `.env.example`. Nunca use a chave secreta.
+5. Para conferir o RLS: `node --env-file=.env.local scripts/verificar-rls.mjs`.
+
+A sessão fica em cookies (`@supabase/ssr`) e é renovada pelo `proxy.ts`, o antigo `middleware.ts`, renomeado no Next 16.
+
 ## Rodando localmente
 
 ```bash
