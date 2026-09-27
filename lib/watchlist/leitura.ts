@@ -12,10 +12,14 @@ export async function lerMinhaLista(): Promise<MinhaLista> {
   if (!usuarioId) return { logado: false }
 
   // Sem filtro por user_id: o RLS já devolve só as linhas desta sessão.
+  // movie_id como critério de desempate: a importação em lote insere várias
+  // linhas na mesma transação, com o mesmo created_at, e sem desempate a
+  // ordem entre elas viria arbitrária.
   const { data, error } = await supabase
     .from('watchlist')
     .select('movie_id')
     .order('created_at', { ascending: true })
+    .order('movie_id', { ascending: true })
     .limit(MAXIMO_NA_LISTA)
 
   if (error || !data) return { logado: true, usuarioId, ids: [], erro: true }

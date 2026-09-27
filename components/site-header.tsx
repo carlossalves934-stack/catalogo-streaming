@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
 import { urlDeEntrar } from '@/lib/auth/proximo'
 import { useWatchlist } from './watchlist-provider'
 
@@ -16,6 +16,23 @@ const LINKS = [
   // como voltar à tela de escolha de serviços.
   { href: '/servicos', label: 'Meus serviços' },
 ]
+
+/**
+ * Só este pedaço usa useSearchParams — isolado num componente próprio (com
+ * Suspense em volta, abaixo) para o resto do cabeçalho continuar estático
+ * na geração das páginas; sem isso o build inteiro cai para render dinâmico.
+ */
+function LinkEntrar({ pathname, className }: { pathname: string; className: string }) {
+  const searchParams = useSearchParams()
+  const busca = searchParams.toString()
+  const caminhoAtual = busca ? `${pathname}?${busca}` : pathname
+
+  return (
+    <Link href={urlDeEntrar(caminhoAtual)} className={className}>
+      Entrar
+    </Link>
+  )
+}
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -86,12 +103,21 @@ export function SiteHeader() {
 
         <div className="ml-auto flex shrink-0 items-center gap-4">
           {pronto && !logado && pathname !== '/entrar' && (
-            <Link
-              href={urlDeEntrar(pathname)}
-              className={`${CONTA} font-medium text-texto hover:text-lanterna`}
+            <Suspense
+              fallback={
+                <Link
+                  href={urlDeEntrar(pathname)}
+                  className={`${CONTA} font-medium text-texto hover:text-lanterna`}
+                >
+                  Entrar
+                </Link>
+              }
             >
-              Entrar
-            </Link>
+              <LinkEntrar
+                pathname={pathname}
+                className={`${CONTA} font-medium text-texto hover:text-lanterna`}
+              />
+            </Suspense>
           )}
           {pronto && logado && (
             <>

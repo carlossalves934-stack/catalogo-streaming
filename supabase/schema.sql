@@ -25,3 +25,7 @@ create policy "remove da propria lista" on public.watchlist
   for delete using ((select auth.uid()) = user_id);
 
 -- Sem política de update: a linha não tem campo mutável.
+
+-- Abre a tabela para quem está logado; o RLS acima é quem decide, linha a
+-- linha, o que cada um pode ler, inserir ou apagar. Nada muda para o anon.
+grant select, insert, delete on public.watchlist to authenticated;

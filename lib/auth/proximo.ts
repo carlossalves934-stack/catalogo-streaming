@@ -13,7 +13,6 @@ export function proximoSeguro(valor: unknown): string {
   if (typeof valor !== 'string') return DESTINO_PADRAO
   if (!valor.startsWith('/')) return DESTINO_PADRAO
   if (valor.startsWith('//') || valor.startsWith('/\\')) return DESTINO_PADRAO
-  // eslint-disable-next-line no-control-regex
   if (/[\u0000-\u001f\u007f]/.test(valor)) return DESTINO_PADRAO
   return valor
 }

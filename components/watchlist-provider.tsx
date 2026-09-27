@@ -82,10 +82,14 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
 
     let ativo = true
     // Sem filtro por user_id: o RLS já devolve só as linhas desta sessão.
+    // movie_id como critério de desempate: a importação em lote insere
+    // várias linhas na mesma transação, com o mesmo created_at, e sem
+    // desempate a ordem entre elas viria arbitrária.
     clienteNavegador()
       .from('watchlist')
       .select('movie_id')
       .order('created_at', { ascending: true })
+      .order('movie_id', { ascending: true })
       .then(({ data, error }) => {
         if (!ativo) return
         setIds(error || !data ? SEM_IDS : data.map((linha: { movie_id: number }) => linha.movie_id))

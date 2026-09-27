@@ -39,6 +39,7 @@ describe('lerMinhaLista', () => {
     expect(chamadas).toEqual([
       { metodo: 'select', args: ['movie_id'] },
       { metodo: 'order', args: ['created_at', { ascending: true }] },
+      { metodo: 'order', args: ['movie_id', { ascending: true }] },
       { metodo: 'limit', args: [50] },
     ])
   })

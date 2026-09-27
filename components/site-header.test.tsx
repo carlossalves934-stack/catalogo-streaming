@@ -5,10 +5,16 @@ import type { WatchlistContexto } from '@/components/watchlist-provider'
 import { ComContexto, contextoDeTeste } from '@/test/contexto-watchlist'
 import { SiteHeader } from './site-header'
 
-const mocks = vi.hoisted(() => ({ caminho: '/filme/550', push: vi.fn(), refresh: vi.fn() }))
+const mocks = vi.hoisted(() => ({
+  caminho: '/filme/550',
+  busca: '',
+  push: vi.fn(),
+  refresh: vi.fn(),
+}))
 
 vi.mock('next/navigation', () => ({
   usePathname: () => mocks.caminho,
+  useSearchParams: () => new URLSearchParams(mocks.busca),
   useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
 }))
 
@@ -22,6 +28,7 @@ function renderizar(valor: WatchlistContexto) {
 
 beforeEach(() => {
   mocks.caminho = '/filme/550'
+  mocks.busca = ''
   mocks.push.mockReset()
   mocks.refresh.mockReset()
 })
@@ -40,6 +47,17 @@ describe('SiteHeader — conta', () => {
     expect(screen.getByRole('link', { name: 'Entrar' })).toHaveAttribute(
       'href',
       '/entrar?proximo=%2Ffilme%2F550',
+    )
+  })
+
+  it('deslogado com query string: Entrar preserva a busca', () => {
+    mocks.caminho = '/explorar'
+    mocks.busca = 'genero=18'
+    renderizar(contextoDeTeste({ logado: false, email: null }))
+
+    expect(screen.getByRole('link', { name: 'Entrar' })).toHaveAttribute(
+      'href',
+      '/entrar?proximo=%2Fexplorar%3Fgenero%3D18',
     )
   })
 
