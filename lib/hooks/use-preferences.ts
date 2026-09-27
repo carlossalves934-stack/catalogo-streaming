@@ -24,12 +24,11 @@ export function usePreferences() {
   }, [])
 
   // Mantém esta instância em dia com escritas feitas por qualquer outra
-  // instância de usePreferences() (outro botão, outra página). O setState
-  // fica dentro do callback passado a subscribe(), não no corpo do efeito —
-  // é isso (como o .then()/.finally() em watchlist-view.tsx) que mantém a
-  // regra react-hooks/set-state-in-effect satisfeita sem eslint-disable:
-  // ela não é acionada por um setState assíncrono, só por um síncrono no
-  // topo do efeito.
+  // instância de usePreferences() (outra página). O setState fica dentro do
+  // callback passado a subscribe(), não no corpo do efeito — é isso (um
+  // setState assíncrono, disparado por uma notificação, não um síncrono no
+  // topo do efeito) que mantém a regra react-hooks/set-state-in-effect
+  // satisfeita sem eslint-disable.
   useEffect(() => subscribe(() => setPreferences(readPreferences())), [])
 
   // Lê de readPreferences() (a fonte real), não do `preferences` fechado no
@@ -49,21 +48,10 @@ export function usePreferences() {
     [atualizar],
   )
 
-  const toggleWatchlist = useCallback((id: number) => {
-    const atual = readPreferences()
-    const jaSalvo = atual.watchlist.includes(id)
-    const watchlist = jaSalvo
-      ? atual.watchlist.filter((salvo) => salvo !== id)
-      : [...atual.watchlist, id]
-    const proximo = { ...atual, watchlist }
-    writePreferences(proximo)
-    setPreferences(proximo)
-  }, [])
-
   const completeOnboarding = useCallback(
     () => atualizar({ hasOnboarded: true }),
     [atualizar],
   )
 
-  return { preferences, hydrated, setProviders, toggleWatchlist, completeOnboarding }
+  return { preferences, hydrated, setProviders, completeOnboarding }
 }

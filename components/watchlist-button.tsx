@@ -1,6 +1,7 @@
 'use client'
 
-import { usePreferences } from '@/lib/hooks/use-preferences'
+import { irParaEntrar } from '@/lib/auth/navegacao'
+import { useWatchlist } from './watchlist-provider'
 
 type Props = {
   movieId: number
@@ -13,11 +14,11 @@ type Props = {
   variante?: 'icone' | 'rotulo'
 }
 
-// Componente cliente: precisa de interatividade (onClick) e do estado do
-// localStorage via usePreferences, então hidrata separado do MovieCard.
+// Componente cliente: precisa de interatividade (onClick) e da lista da
+// conta via useWatchlist(), então hidrata separado do MovieCard.
 export function WatchlistButton({ movieId, title, variante = 'icone' }: Props) {
-  const { preferences, hydrated, toggleWatchlist } = usePreferences()
-  const salvo = preferences.watchlist.includes(movieId)
+  const { pronto, logado, ids, alternar } = useWatchlist()
+  const salvo = ids.includes(movieId)
 
   const comum =
     'transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna disabled:opacity-50'
@@ -30,10 +31,10 @@ export function WatchlistButton({ movieId, title, variante = 'icone' }: Props) {
   return (
     <button
       type="button"
-      onClick={() => toggleWatchlist(movieId)}
+      onClick={() => (logado ? alternar(movieId) : irParaEntrar())}
       aria-pressed={salvo}
       aria-label={salvo ? `Remover ${title} da minha lista` : `Salvar ${title} na minha lista`}
-      disabled={!hydrated}
+      disabled={!pronto}
       className={`${aparencia} ${comum}`}
     >
       <span aria-hidden="true" className={salvo ? 'text-lanterna' : undefined}>
