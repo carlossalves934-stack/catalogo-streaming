@@ -186,7 +186,7 @@ describe('acessibilidade — composições realistas de página', () => {
     const { container } = render(
       <Layout>
         <h1 className="px-4 text-2xl font-semibold text-neutral-100">Explorar</h1>
-        <FilterBar genres={generos} />
+        <FilterBar genres={generos} anos={[2026, 2015, 1970]} decadas={[2020, 2000, 1970]} />
         <MovieGrid movies={filmes} servicos="8" />
       </Layout>,
     )
