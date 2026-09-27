@@ -1,9 +1,10 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { EmptyState } from '@/components/empty-state'
 import { FilterBar } from '@/components/filter-bar'
 import { HeroDestaque } from '@/components/hero-destaque'
+import { MinhaListaConteudo } from '@/components/minha-lista-conteudo'
 import { MovieCardSkeleton, MovieRailSkeleton } from '@/components/skeletons'
 import { MovieGrid } from '@/components/movie-grid'
 import { MovieRail } from '@/components/movie-rail'
@@ -14,7 +15,6 @@ import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { WatchProviderSection } from '@/components/watch-provider-section'
 import { WatchlistButton } from '@/components/watchlist-button'
-import { WatchlistView } from '@/components/watchlist-view'
 import type { Genre, Movie, Provider, WatchOptions } from '@/lib/tmdb/types'
 
 // Mock único para todo o arquivo: cobre os hooks de next/navigation usados
@@ -124,11 +124,8 @@ describe('acessibilidade — componentes sem verificação própria', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('minha lista vazia (WatchlistView)', async () => {
-    const { container } = render(<WatchlistView />)
-    await waitFor(() => {
-      expect(screen.getByText('Sua lista está vazia')).toBeInTheDocument()
-    })
+  it('minha lista vazia (MinhaListaConteudo)', async () => {
+    const { container } = render(<MinhaListaConteudo totalSalvo={0} filmes={[]} erro={false} />)
     expect(await axe(container)).toHaveNoViolations()
   })
 })
@@ -222,16 +219,9 @@ describe('acessibilidade — composições realistas de página', () => {
     const { container } = render(
       <Layout>
         <h1 className="px-4 pb-4 text-2xl font-semibold text-neutral-100">Minha lista</h1>
-        <WatchlistView />
+        <MinhaListaConteudo totalSalvo={0} filmes={[]} erro={false} />
       </Layout>,
     )
-
-    // Espera a hidratação assíncrona do usePreferences() resolver, para o
-    // axe analisar o DOM final (estado vazio), não o esqueleto de
-    // carregamento que aparece antes disso.
-    await waitFor(() => {
-      expect(screen.getByText('Sua lista está vazia')).toBeInTheDocument()
-    })
 
     expect(await axe(container)).toHaveNoViolations()
   })

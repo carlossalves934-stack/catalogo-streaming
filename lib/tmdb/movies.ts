@@ -2,7 +2,7 @@ import 'server-only'
 import { tmdbFetch } from './client'
 import { CACHE, WATCH_REGION } from './config'
 import { discoverMovies } from './discover'
-import { toMovie, toMovieDetail, toWatchOptions } from './mappers'
+import { resumirFilme, toMovie, toMovieDetail, toWatchOptions } from './mappers'
 import type { Movie, MovieDetail, Page, WatchOptions } from './types'
 
 export async function getMovie(id: number): Promise<MovieDetail> {
@@ -12,6 +12,24 @@ export async function getMovie(id: number): Promise<MovieDetail> {
   })
 
   return toMovieDetail(resposta)
+}
+
+/**
+ * Vários filmes pelo id, na ordem pedida. Um id que não existe mais no
+ * TMDB (filme removido) é omitido, em vez de derrubar a lista inteira.
+ */
+export async function getMoviesById(ids: number[]): Promise<Movie[]> {
+  const resultados = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        return resumirFilme(await getMovie(id))
+      } catch {
+        return null
+      }
+    }),
+  )
+
+  return resultados.filter((filme): filme is Movie => filme !== null)
 }
 
 export async function getMovieProviders(id: number): Promise<WatchOptions> {
