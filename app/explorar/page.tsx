@@ -2,32 +2,27 @@ import Link from 'next/link'
 import { EmptyState } from '@/components/empty-state'
 import { FilterBar } from '@/components/filter-bar'
 import { MovieGrid } from '@/components/movie-grid'
+import { anosDisponiveis, decadasDisponiveis, lerFiltros } from '@/lib/filtros'
 import { idsDeServicos } from '@/lib/servicos'
 import { discoverMovies } from '@/lib/tmdb/discover'
 import { getGenres } from '@/lib/tmdb/genres'
-import type { SortBy } from '@/lib/tmdb/types'
 
 type Props = {
   searchParams: Promise<{
     servicos?: string
     genero?: string
     decada?: string
+    ano?: string
     nota?: string
     ordenar?: string
     pagina?: string
   }>
 }
 
-const ORDENACOES_VALIDAS: SortBy[] = ['popularity', 'rating', 'releaseDate']
-
 function numero(valor: string | undefined): number | undefined {
   if (valor === undefined) return undefined
   const n = Number(valor)
   return Number.isFinite(n) ? n : undefined
-}
-
-function ehSortBy(valor: string | undefined): valor is SortBy {
-  return valor !== undefined && ORDENACOES_VALIDAS.includes(valor as SortBy)
 }
 
 export default async function ExplorarPage({ searchParams }: Props) {
@@ -40,19 +35,15 @@ export default async function ExplorarPage({ searchParams }: Props) {
   // corrigiu ao extrair este módulo.
   const providerIds = idsDeServicos(params.servicos)
 
-  const sortBy = ehSortBy(params.ordenar) ? params.ordenar : 'popularity'
+  // Mesma leitura de filtros que a Home faz: uma copia local desta validacao
+  // divergiria da outra tela, que e o bug que a Task 11 ja corrigiu uma vez.
+  const hoje = new Date()
+  const filtros = lerFiltros(params, hoje)
   const pagina = numero(params.pagina) ?? 1
 
   const [generos, resultado] = await Promise.all([
     getGenres(),
-    discoverMovies({
-      providerIds,
-      genreId: numero(params.genero),
-      decade: numero(params.decada),
-      minRating: numero(params.nota),
-      sortBy,
-      page: pagina,
-    }),
+    discoverMovies({ ...filtros, providerIds, page: pagina }),
   ])
 
   function urlDaPagina(destino: number): string {
@@ -68,7 +59,7 @@ export default async function ExplorarPage({ searchParams }: Props) {
     <div className="mx-auto max-w-7xl py-8">
       <h1 className="titulo px-4 text-2xl font-semibold text-texto sm:px-6 sm:text-3xl">Explorar</h1>
 
-      <FilterBar genres={generos} />
+      <FilterBar genres={generos} anos={anosDisponiveis(hoje)} decadas={decadasDisponiveis(hoje)} />
 
       {resultado.items.length === 0 ? (
         <EmptyState

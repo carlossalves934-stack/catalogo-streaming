@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { toMovie, toMovieDetail, toProvider, toWatchOptions } from './mappers'
+import { resumirFilme, toMovie, toMovieDetail, toProvider, toWatchOptions } from './mappers'
+import type { MovieDetail } from './types'
 
 const filmeCru = {
   id: 693134,
@@ -172,5 +173,42 @@ describe('toMovieDetail', () => {
     expect(detalhe.trailerYoutubeKey).toBeNull()
     expect(detalhe.watchOptions.flatrate).toEqual([])
     expect(detalhe.runtimeMinutes).toBeNull()
+  })
+})
+
+describe('resumirFilme', () => {
+  it('fica só com os campos de Movie, sem elenco, trailer nem provedores', () => {
+    const detalhe: MovieDetail = {
+      id: 550,
+      title: 'Clube da Luta',
+      originalTitle: 'Fight Club',
+      overview: 'Sinopse.',
+      posterUrl: null,
+      backdropUrl: null,
+      releaseYear: 1999,
+      rating: 8.4,
+      voteCount: 900,
+      genreIds: [18],
+      runtimeMinutes: 139,
+      genres: [{ id: 18, name: 'Drama' }],
+      cast: [],
+      trailerYoutubeKey: 'abc',
+      watchOptions: { flatrate: [], rent: [], buy: [], tmdbLink: null },
+    }
+
+    expect(Object.keys(resumirFilme(detalhe)).sort()).toEqual(
+      [
+        'backdropUrl',
+        'genreIds',
+        'id',
+        'originalTitle',
+        'overview',
+        'posterUrl',
+        'rating',
+        'releaseYear',
+        'title',
+        'voteCount',
+      ].sort(),
+    )
   })
 })

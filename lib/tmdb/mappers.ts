@@ -128,3 +128,25 @@ export function toMovieDetail(raw: RawMovieDetail): MovieDetail {
     watchOptions: toWatchOptions(raw['watch/providers']),
   }
 }
+
+/**
+ * Ruling T14-a (movido de app/api/filmes/route.ts): MovieDetail carrega
+ * elenco, gêneros, trailer e provedores. O TypeScript aceita usá-lo onde se
+ * espera Movie, por ser um supertipo, mas tudo isso iria junto para uma
+ * tela que só desenha cards. Este mapeamento explícito é o que de fato
+ * reduz o que é enviado; a anotação de tipo sozinha não faz isso.
+ */
+export function resumirFilme(filme: MovieDetail): Movie {
+  return {
+    id: filme.id,
+    title: filme.title,
+    originalTitle: filme.originalTitle,
+    overview: filme.overview,
+    posterUrl: filme.posterUrl,
+    backdropUrl: filme.backdropUrl,
+    releaseYear: filme.releaseYear,
+    rating: filme.rating,
+    voteCount: filme.voteCount,
+    genreIds: filme.genreIds,
+  }
+}

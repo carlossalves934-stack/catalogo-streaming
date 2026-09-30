@@ -66,3 +66,33 @@ export function railDefinitions(hoje: Date): RailDefinition[] {
     },
   ]
 }
+
+/**
+ * Aplica ao trilho a nota mínima escolhida pelo usuário na home.
+ *
+ * A nota que o trilho já traz é um PISO, não um valor substituível: vale
+ * sempre a mais estrita das duas. Escolher 6 não pode rebaixar "Muito bem
+ * avaliados" a um trilho de nota 6 — o trilho deixaria de cumprir o que o
+ * próprio título promete.
+ */
+export function comNotaMinima(
+  definicao: RailDefinition,
+  nota: number | undefined,
+): RailDefinition {
+  if (nota === undefined) return definicao
+
+  const efetiva = Math.max(definicao.filters.minRating ?? 0, nota)
+
+  // O href precisa refletir a nota EFETIVA, não a escolhida: escrever a
+  // escolha do usuário direto no link faria o "Ver mais" de um trilho curado
+  // abrir um conjunto mais amplo do que a prévia que ele acabou de mostrar.
+  const [caminho, query = ''] = definicao.href.split('?')
+  const params = new URLSearchParams(query)
+  params.set('nota', String(efetiva))
+
+  return {
+    ...definicao,
+    filters: { ...definicao.filters, minRating: efetiva },
+    href: `${caminho}?${params.toString()}`,
+  }
+}

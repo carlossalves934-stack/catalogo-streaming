@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { urlDeEntrar } from '@/lib/auth/proximo'
+import { useWatchlist } from './watchlist-provider'
 
 const LINKS = [
   { href: '/', label: 'Início' },
@@ -15,8 +17,38 @@ const LINKS = [
   { href: '/servicos', label: 'Meus serviços' },
 ]
 
+/**
+ * Só este pedaço usa useSearchParams — isolado num componente próprio (com
+ * Suspense em volta, abaixo) para o resto do cabeçalho continuar estático
+ * na geração das páginas; sem isso o build inteiro cai para render dinâmico.
+ */
+function LinkEntrar({ pathname, className }: { pathname: string; className: string }) {
+  const searchParams = useSearchParams()
+  const busca = searchParams.toString()
+  const caminhoAtual = busca ? `${pathname}?${busca}` : pathname
+
+  return (
+    <Link href={urlDeEntrar(caminhoAtual)} className={className}>
+      Entrar
+    </Link>
+  )
+}
+
 export function SiteHeader() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { pronto, logado, email, sair } = useWatchlist()
+
+  async function aoSair() {
+    await sair()
+    // Minha lista exige conta: ficar nela depois de sair só levaria ao login.
+    if (pathname === '/minha-lista') router.push('/')
+    router.refresh()
+  }
+
+  const CONTA =
+    'rounded py-1 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lanterna'
+
   // O cabeçalho flutua sobre a foto do destaque; ao rolar, ganha fundo para
   // não competir com o conteúdo. Componente cliente só por causa disto.
   const [rolou, setRolou] = useState(false)
@@ -68,6 +100,34 @@ export function SiteHeader() {
             )
           })}
         </ul>
+
+        <div className="ml-auto flex shrink-0 items-center gap-4">
+          {pronto && !logado && pathname !== '/entrar' && (
+            <Suspense
+              fallback={
+                <Link
+                  href={urlDeEntrar(pathname)}
+                  className={`${CONTA} font-medium text-texto hover:text-lanterna`}
+                >
+                  Entrar
+                </Link>
+              }
+            >
+              <LinkEntrar
+                pathname={pathname}
+                className={`${CONTA} font-medium text-texto hover:text-lanterna`}
+              />
+            </Suspense>
+          )}
+          {pronto && logado && (
+            <>
+              <span className="hidden text-sm text-nevoa md:inline">{email}</span>
+              <button type="button" onClick={aoSair} className={`${CONTA} text-nevoa hover:text-texto`}>
+                Sair
+              </button>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   )

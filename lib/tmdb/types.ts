@@ -1,4 +1,4 @@
-export type SortBy = 'popularity' | 'rating' | 'releaseDate'
+export type SortBy = 'popularity' | 'rating' | 'ratingAsc' | 'releaseDate'
 
 export type Genre = {
   id: number
@@ -58,6 +58,7 @@ export type DiscoverFilters = {
   providerIds: number[]
   genreId?: number
   decade?: number
+  year?: number
   minRating?: number
   sortBy: SortBy
   page: number

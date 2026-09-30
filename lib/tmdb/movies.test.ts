@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { server } from '@/test/msw/server'
-import { getMovie, getMovieProviders, getSimilarMovies, searchMovies } from './movies'
+import { getMovie, getMovieProviders, getMoviesById, getSimilarMovies, searchMovies } from './movies'
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => server.resetHandlers())
@@ -84,6 +84,31 @@ describe('searchMovies', () => {
 
     expect(pagina.items).toEqual([])
     expect(pagina.totalResults).toBe(0)
+  })
+})
+
+describe('getMoviesById', () => {
+  it('busca cada id, mantém a ordem pedida e omite o que falhou', async () => {
+    server.use(
+      http.get('https://api.themoviedb.org/3/movie/13', () =>
+        HttpResponse.json({ id: 13, title: 'Forrest Gump', vote_average: 8.5, vote_count: 800 }),
+      ),
+      http.get('https://api.themoviedb.org/3/movie/404', () =>
+        HttpResponse.json({ status_message: 'not found' }, { status: 404 }),
+      ),
+      http.get('https://api.themoviedb.org/3/movie/550', () =>
+        HttpResponse.json({ id: 550, title: 'Clube da Luta', vote_average: 8.4, vote_count: 900 }),
+      ),
+    )
+
+    const filmes = await getMoviesById([550, 404, 13])
+
+    expect(filmes.map((f) => f.title)).toEqual(['Clube da Luta', 'Forrest Gump'])
+    expect(filmes[0]).not.toHaveProperty('cast')
+  })
+
+  it('não faz requisição nenhuma para lista vazia', async () => {
+    expect(await getMoviesById([])).toEqual([])
   })
 })
 

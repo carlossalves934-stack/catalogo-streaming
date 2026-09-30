@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { railDefinitions } from './rails'
+import { comNotaMinima, railDefinitions, type RailDefinition } from './rails'
 
 describe('railDefinitions', () => {
   it('define cinco trilhos', () => {
@@ -50,6 +50,80 @@ describe('railDefinitions', () => {
 
       const url = new URL(trilho.href, 'http://x')
       expect(url.searchParams.get('nota')).toBe(String(trilho.filters.minRating))
+    }
+  })
+})
+
+function trilho(id: string): RailDefinition {
+  const encontrado = railDefinitions(new Date('2026-03-15')).find((t) => t.id === id)
+  if (!encontrado) throw new Error(`nenhum trilho com id ${id}`)
+  return encontrado
+}
+
+describe('comNotaMinima', () => {
+  it('devolve a definicao inalterada quando nao ha nota escolhida', () => {
+    const curado = trilho('bem-avaliados')
+
+    expect(comNotaMinima(curado, undefined)).toEqual(curado)
+  })
+
+  it('aplica a nota escolhida a um trilho que nao tinha nota propria', () => {
+    expect(comNotaMinima(trilho('em-alta'), 8).filters.minRating).toBe(8)
+  })
+
+  it('nao afrouxa a curadoria de um trilho com nota propria mais alta', () => {
+    // Escolher 6 nao pode rebaixar "Muito bem avaliados" a um trilho de nota 6:
+    // a curadoria do trilho e um piso, nao um valor que o filtro substitui.
+    expect(comNotaMinima(trilho('bem-avaliados'), 6).filters.minRating).toBe(7.5)
+  })
+
+  it('sobrepoe a nota curada quando a escolha do usuario e mais estrita', () => {
+    expect(comNotaMinima(trilho('bem-avaliados'), 8).filters.minRating).toBe(8)
+  })
+
+  it('preserva os demais filtros e a identidade do trilho', () => {
+    const curado = trilho('redescobrir')
+
+    const resultado = comNotaMinima(curado, 8)
+
+    expect(resultado.id).toBe(curado.id)
+    expect(resultado.title).toBe(curado.title)
+    expect(resultado.filters.sortBy).toBe(curado.filters.sortBy)
+    expect(resultado.filters.decade).toBe(curado.filters.decade)
+  })
+})
+
+describe('comNotaMinima e o href do "Ver mais"', () => {
+  function params(href: string): URLSearchParams {
+    return new URL(href, 'http://x').searchParams
+  }
+
+  it('acrescenta a nota ao href de um trilho que nao tinha nota propria', () => {
+    expect(params(comNotaMinima(trilho('em-alta'), 8).href).get('nota')).toBe('8')
+  })
+
+  it('reescreve a nota do href quando a escolha do usuario sobrepoe a curada', () => {
+    expect(params(comNotaMinima(trilho('bem-avaliados'), 8).href).get('nota')).toBe('8')
+  })
+
+  it('mantem a nota curada no href quando a escolha do usuario e mais frouxa', () => {
+    expect(params(comNotaMinima(trilho('bem-avaliados'), 6).href).get('nota')).toBe('7.5')
+  })
+
+  it('preserva os demais parametros do href', () => {
+    const destino = params(comNotaMinima(trilho('redescobrir'), 8).href)
+
+    expect(destino.get('ordenar')).toBe('rating')
+    expect(destino.get('decada')).toBe('2000')
+  })
+
+  it('mantem href e filters em acordo em todo trilho filtrado', () => {
+    // Mesma invariante que os trilhos crus ja respeitam: a previa e o
+    // "Ver mais" precisam mostrar o mesmo conjunto.
+    for (const cru of railDefinitions(new Date('2026-03-15'))) {
+      const filtrado = comNotaMinima(cru, 8)
+
+      expect(params(filtrado.href).get('nota')).toBe(String(filtrado.filters.minRating))
     }
   })
 })

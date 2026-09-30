@@ -128,3 +128,39 @@ describe('discoverMovies', () => {
     expect((await discoverMovies(base)).items).toEqual([])
   })
 })
+
+describe('buildDiscoverParams: ordenacao crescente por nota', () => {
+  it('traduz ratingAsc para vote_average.asc', () => {
+    expect(buildDiscoverParams({ ...base, sortBy: 'ratingAsc' }).sort_by).toBe('vote_average.asc')
+  })
+
+  it('exige minimo de votos tambem na ordem crescente', () => {
+    // Sem o piso, o topo vira filme obscuro de um voto e nota 0,5 — nao
+    // "filmes ruins conhecidos", que e o que a opcao promete.
+    expect(buildDiscoverParams({ ...base, sortBy: 'ratingAsc' })['vote_count.gte']).toBe('300')
+  })
+})
+
+describe('buildDiscoverParams: filtro de ano', () => {
+  it('repassa o ano como primary_release_year', () => {
+    expect(buildDiscoverParams({ ...base, year: 2015 }).primary_release_year).toBe('2015')
+  })
+
+  it('ignora a decada quando um ano exato foi informado', () => {
+    // Os dois juntos viram E logico no TMDB: decada=2000 com ano=2015 nao
+    // cruza nada e devolveria lista vazia sem explicacao. O ano e mais
+    // estrito, entao ele manda.
+    const params = buildDiscoverParams({ ...base, decade: 2000, year: 2015 })
+
+    expect(params.primary_release_year).toBe('2015')
+    expect(params['primary_release_date.gte']).toBeUndefined()
+    expect(params['primary_release_date.lte']).toBeUndefined()
+  })
+
+  it('mantem a decada quando nenhum ano foi informado', () => {
+    const params = buildDiscoverParams({ ...base, decade: 2000 })
+
+    expect(params['primary_release_date.gte']).toBe('2000-01-01')
+    expect(params.primary_release_year).toBeUndefined()
+  })
+})

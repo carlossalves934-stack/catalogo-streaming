@@ -1,39 +1,44 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { ORDENACOES } from '@/lib/filtros'
 import type { Genre } from '@/lib/tmdb/types'
+import { CLASSE_ROTULO, CLASSE_SELECT, RatingSelect } from './rating-select'
 
-const DECADAS = [2020, 2010, 2000, 1990, 1980, 1970]
-// 7.5 precisa estar na lista: é o valor que o trilho "Muito bem avaliados"
-// usa (vote_average.gte=7.5), e um <select> controlado cujo valor não bate
-// com nenhuma opção some sem aviso, escondendo o filtro que o usuário
-// precisaria limpar.
-const NOTAS = [6, 7, 7.5, 8]
-const ORDENACOES = [
-  { valor: 'popularity', rotulo: 'Mais populares' },
-  { valor: 'rating', rotulo: 'Melhores notas' },
-  { valor: 'releaseDate', rotulo: 'Mais recentes' },
-]
-
-// Ruling do controller (Task 15, seguimento): border-borda contra
-// bg-noite/bg-sala mede ~1.3:1, abaixo do mínimo de 3:1 que o
-// spec (§12.3) exige para o contorno de um controle de interface. Trocado
-// por `contorno` (3.3:1 contra a página, 3.0:1 contra o próprio fundo
-// do select) — o tom mais escuro que ainda soa "quase invisível" no visual
-// escuro, mas cruza o mínimo nos dois contextos.
-const CLASSE_SELECT =
-  'rounded-lg border border-contorno bg-sala px-3 py-2 text-sm text-texto focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lanterna'
-
-const CLASSE_ROTULO = 'text-xs text-nevoa'
+/**
+ * Prefixos do seletor de Ano.
+ *
+ * Décadas e anos exatos dividem um controle só: dois seletores para a mesma
+ * escala deixavam escolher "1990s" com "2015", que no TMDB vira E lógico,
+ * não cruza nada e devolve lista vazia sem explicação. Um valor só, com
+ * prefixo, torna as duas escalas mutuamente exclusivas por construção.
+ *
+ * A década precisa continuar alcançável porque o "Ver mais" do trilho
+ * "Vale redescobrir" manda `decada=` na URL: sem uma opção correspondente,
+ * o seletor cairia para "Qualquer" e o filtro ficaria invisível.
+ */
+const PREFIXO_DECADA = 'decada:'
+const PREFIXO_ANO = 'ano:'
 
 type Props = {
   genres: Genre[]
+  /** Calculados no servidor: no cliente, a virada do ano quebraria a hidratação. */
+  anos: number[]
+  decadas: number[]
 }
 
-export function FilterBar({ genres }: Props) {
+export function FilterBar({ genres, anos, decadas }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  function navegar(params: URLSearchParams) {
+    // Trocar um filtro invalida a posição na paginação: a página 3 do
+    // conjunto de filtros antigo não corresponde a nada no novo conjunto.
+    params.delete('pagina')
+
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   function aplicar(chave: string, valor: string) {
     const params = new URLSearchParams(searchParams.toString())
@@ -44,12 +49,33 @@ export function FilterBar({ genres }: Props) {
       params.set(chave, valor)
     }
 
-    // Trocar um filtro invalida a posição na paginação: a página 3 do
-    // conjunto de filtros antigo não corresponde a nada no novo conjunto.
-    params.delete('pagina')
-
-    router.push(`${pathname}?${params.toString()}`)
+    navegar(params)
   }
+
+  function aplicarPeriodo(valor: string) {
+    const params = new URLSearchParams(searchParams.toString())
+
+    // Os dois sempre saem juntos: é o que garante que década e ano nunca
+    // coexistam na URL, em qualquer ordem de cliques.
+    params.delete('decada')
+    params.delete('ano')
+
+    if (valor.startsWith(PREFIXO_DECADA)) {
+      params.set('decada', valor.slice(PREFIXO_DECADA.length))
+    } else if (valor.startsWith(PREFIXO_ANO)) {
+      params.set('ano', valor.slice(PREFIXO_ANO.length))
+    }
+
+    navegar(params)
+  }
+
+  const decadaAtual = searchParams.get('decada')
+  const anoAtual = searchParams.get('ano')
+  const periodoSelecionado = decadaAtual
+    ? `${PREFIXO_DECADA}${decadaAtual}`
+    : anoAtual
+      ? `${PREFIXO_ANO}${anoAtual}`
+      : ''
 
   return (
     <div className="flex flex-wrap gap-3 px-4 py-4">
@@ -73,42 +99,36 @@ export function FilterBar({ genres }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="filtro-decada" className={CLASSE_ROTULO}>
-          Década
+        <label htmlFor="filtro-ano" className={CLASSE_ROTULO}>
+          Ano
         </label>
         <select
-          id="filtro-decada"
+          id="filtro-ano"
           className={CLASSE_SELECT}
-          value={searchParams.get('decada') ?? ''}
-          onChange={(evento) => aplicar('decada', evento.target.value)}
+          value={periodoSelecionado}
+          onChange={(evento) => aplicarPeriodo(evento.target.value)}
         >
           <option value="">Qualquer</option>
-          {DECADAS.map((decada) => (
-            <option key={decada} value={decada}>
-              {decada}s
-            </option>
-          ))}
+          <optgroup label="Décadas">
+            {decadas.map((decada) => (
+              <option key={decada} value={`${PREFIXO_DECADA}${decada}`}>
+                {decada}s
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Anos">
+            {anos.map((ano) => (
+              <option key={ano} value={`${PREFIXO_ANO}${ano}`}>
+                {ano}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="filtro-nota" className={CLASSE_ROTULO}>
-          Nota mínima
-        </label>
-        <select
-          id="filtro-nota"
-          className={CLASSE_SELECT}
-          value={searchParams.get('nota') ?? ''}
-          onChange={(evento) => aplicar('nota', evento.target.value)}
-        >
-          <option value="">Qualquer</option>
-          {NOTAS.map((nota) => (
-            <option key={nota} value={nota}>
-              {nota.toLocaleString('pt-BR')} ou mais
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* A lista de notas e a regra do 7.5 moram em lib/notas.ts, ao lado do
+          parser da URL que precisa aceitar exatamente os mesmos valores. */}
+      <RatingSelect />
 
       <div className="flex flex-col gap-1">
         <label htmlFor="filtro-ordem" className={CLASSE_ROTULO}>

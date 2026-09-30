@@ -41,12 +41,11 @@ describe('usePreferences', () => {
     expect(result.current.preferences).toEqual(saved)
   })
 
-  it('propaga toggleWatchlist de uma instancia para outra instancia montada', async () => {
+  it('propaga uma escrita de uma instancia para outra instancia montada', async () => {
     // Finding 1 da revisão da Task 14: cada usePreferences() era um
-    // useState isolado — escrever numa instância (um botão de watchlist)
-    // nunca chegava a outra (a tela Minha Lista) até a página recarregar.
-    // Este teste monta duas instâncias independentes, uma que grava e outra
-    // que só observa, e falha se a segunda não reagir.
+    // useState isolado — escrever numa instância nunca chegava a outra até
+    // a página recarregar. Este teste monta duas instâncias independentes,
+    // uma que grava e outra que só observa, e falha se a segunda não reagir.
     const instanciaA = renderHook(() => usePreferences())
     const instanciaB = renderHook(() => usePreferences())
 
@@ -55,17 +54,17 @@ describe('usePreferences', () => {
       expect(instanciaB.result.current.hydrated).toBe(true)
     })
 
-    instanciaA.result.current.toggleWatchlist(550)
+    instanciaA.result.current.setProviders([8])
 
     await waitFor(() => {
-      expect(instanciaB.result.current.preferences.watchlist).toEqual([550])
+      expect(instanciaB.result.current.preferences.providerIds).toEqual([8])
     })
-    expect(instanciaA.result.current.preferences.watchlist).toEqual([550])
+    expect(instanciaA.result.current.preferences.providerIds).toEqual([8])
 
-    instanciaA.result.current.toggleWatchlist(550)
+    instanciaA.result.current.setProviders([])
 
     await waitFor(() => {
-      expect(instanciaB.result.current.preferences.watchlist).toEqual([])
+      expect(instanciaB.result.current.preferences.providerIds).toEqual([])
     })
   })
 })
